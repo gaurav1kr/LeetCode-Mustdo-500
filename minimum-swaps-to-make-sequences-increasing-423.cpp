@@ -8,7 +8,8 @@ public:
         int ans00 = 0;
         for(int i = nums1.size()-1;i>=0;i--)
 		{
-            for(int j = 0;j<2;j++){
+            for(int j = 0;j<2;j++)
+			{
                 int ans = INT_MAX;
                 if(j)
 				{
