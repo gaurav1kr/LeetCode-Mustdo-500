@@ -7,7 +7,7 @@ public:
         int  sum = 0;
         sum = root->val + solve(root->left) + solve(root->right);
         if(sum == 0)
-		{
+	{
             root = NULL;
         }
         return sum;
