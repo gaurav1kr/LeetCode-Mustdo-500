@@ -1,9 +1,11 @@
-##Structure padding and packing - 
+Structure padding and packing - 
 Compiler adds extra memory for the data types as per the sequence of variables which is mentioned
 in the structure or classes in C++. This is called structure padding.
 The allocation is inlined with whether it's a 32 bit or 64 bit machine
-e.g :-
 
+Consider below 2 cases for a better understanding :- 
+
+Case-1
 ```
 struct Base
 {
@@ -34,6 +36,7 @@ ab    i   c
 # Third 4 byte will be allocated for the variable 'c'.
 ```
 
+Case-2 :-
 ```
 # Consider a case where we will change the sequence of variables as below :- 
 
