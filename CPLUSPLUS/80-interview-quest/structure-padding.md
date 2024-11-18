@@ -3,6 +3,7 @@ Compiler adds extra memory for the data types as per the sequence which is menti
 in the structure or classes in C++. This is called structure padding.
 e.g :-
 
+```
 struct Base
 {
 	char a ;
@@ -30,7 +31,9 @@ ab    i   c
 
 # Second 4 byte will be allocated for the variable 'i' and that will consume whole '4' bytes.
 # Third 4 byte will be allocated for the variable 'c'.
+```
 
+```
 # Consider a case where we will change the sequence of variables as below :- 
 
 struct Base
@@ -53,4 +56,5 @@ int main()
 abc    i
 
 # In case, if we want to stop this padding , we need to add an additional preprocessor directive -
-   #pragma pack(1)
+#pragma pack(1)
+```
