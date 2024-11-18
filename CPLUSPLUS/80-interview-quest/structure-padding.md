@@ -1,6 +1,7 @@
 ##Structure padding and packing - 
-Compiler adds extra memory for the data types as per the sequence which is mentioned
+Compiler adds extra memory for the data types as per the sequence of variables which is mentioned
 in the structure or classes in C++. This is called structure padding.
+The allocation is inlined with whether it's a 32 bit or 64 bit machine
 e.g :-
 
 ```
