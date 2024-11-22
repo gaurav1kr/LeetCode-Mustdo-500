@@ -98,31 +98,80 @@ PermissionTable
 
 ## APIs
 
-- **Upload File**: `POST /upload`
-- **Download File**: `GET /download/{fileID}`
-- **Share File**: `POST /share/{fileID}`
-- **List Files**: `GET /files`
+- Upload File: POST /upload
+- Download File: GET /download/{fileID}
+- Share File: POST /share/{fileID}
+- List Files: GET /files
+- Create Folder: POST /folders
 
 ## Services
+Explanation of Services Used
+- Authentication Service:
+	Logs in and logs out users using the authenticate() and logout() methods.
+	Simulates OAuth-like functionality for managing user sessions.
+	
+- File Storage Service:
+	Handles file uploads and downloads with uploadFile() and downloadFile() methods.
 
-- **Authentication Service**: Handles OAuth 2.0 for user authentication.
-- **Sync Service**: Manages synchronization between devices.
-- **Collaboration Service**: Manages real-time file collaboration.
-- **Versioning Service**: Stores and retrieves file versions.
+- Sync Service:
+	Synchronizes multiple files across devices using syncFiles().
 
-## C++ Code Example: Multithreading and File Upload
+- Collaboration Service:
+	Provides methods to share files (shareFile()) and notify other users about file changes (notifyChanges()).
+
+- Versioning Service:
+	Tracks changes to files (trackChanges()) and supports restoring files to previous versions (restoreVersion()).
+
+
+## Sequence Diagram 
+sequenceDiagram
+    participant User
+    participant AuthenticationService
+    participant FileStorageService
+    participant SyncService
+    participant CollaborationService
+    participant VersioningService
+
+    User ->> AuthenticationService: authenticate()
+    AuthenticationService -->> User: success/failure
+    User ->> FileStorageService: uploadFile(file)
+    FileStorageService -->> User: upload successful
+    User ->> SyncService: syncFiles([file1, file2])
+    SyncService -->> User: files synchronized
+    User ->> CollaborationService: shareFile(file, user)
+    CollaborationService -->> User: sharing successful
+    CollaborationService ->> User: notifyChanges(file)
+    User ->> VersioningService: trackChanges(file)
+    VersioningService -->> User: version updated
+    User ->> VersioningService: restoreVersion(file, version)
+    VersioningService -->> User: version restored
+    User ->> AuthenticationService: logout()
+    AuthenticationService -->> User: logout successful
+
+Explanation of Sequence Diagram :-
+- Authentication Service: Authenticates the user at the start of the interaction.
+- File Storage Service: Handles file uploads.
+- Sync Service: Synchronizes multiple files across devices.
+- Collaboration Service: Shares files and sends notifications about updates.
+- Versioning Service: Tracks changes and restores previous versions.
+- Authentication Service: Logs the user out at the end.
+
+## C++ Code Example:
 
 ```cpp
 #include <iostream>
 #include <thread>
 #include <vector>
 #include <mutex>
-#include <chrono>
+#include <map>
 #include <memory>
+#include <chrono>
+#include <atomic>
 
 // Mutex for thread safety
-std::mutex file_mutex;
+std::mutex global_mutex;
 
+// User Class
 class User {
 public:
     std::string userID;
@@ -133,104 +182,137 @@ public:
         : userID(id), userName(name), email(email) {}
 
     void login() {
-        std::cout << userName << " logged in successfully." << std::endl;
+        std::cout << "[Authentication Service] User " << userName << " logged in successfully." << std::endl;
     }
 
     void logout() {
-        std::cout << userName << " logged out." << std::endl;
+        std::cout << "[Authentication Service] User " << userName << " logged out." << std::endl;
     }
 };
 
+// File Class
 class File {
 public:
     std::string fileID;
     std::string fileName;
     size_t fileSize;
     std::shared_ptr<User> owner;
+    std::string version;
 
     File(const std::string& id, const std::string& name, size_t size, std::shared_ptr<User> user)
-        : fileID(id), fileName(name), fileSize(size), owner(user) {}
+        : fileID(id), fileName(name), fileSize(size), owner(user), version("1.0") {}
 
-    void upload() {
-        std::lock_guard<std::mutex> lock(file_mutex);
-        std::cout << "Uploading file: " << fileName << ", Size: " << fileSize << " bytes" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(2)); // Simulate upload delay
-        std::cout << "File " << fileName << " uploaded successfully!" << std::endl;
-    }
-
-    void sync() {
-        std::lock_guard<std::mutex> lock(file_mutex);
-        std::cout << "Synchronizing file: " << fileName << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate sync delay
-        std::cout << "File " << fileName << " synchronized successfully!" << std::endl;
-    }
-
-    void share() {
-        std::cout << "Sharing file: " << fileName << " with other users." << std::endl;
+    void updateVersion() {
+        version = std::to_string(std::stod(version) + 0.1); // Increment version
+        std::cout << "[Versioning Service] File " << fileName << " updated to version " << version << std::endl;
     }
 };
 
-class StorageService {
+// Authentication Service
+class AuthenticationService {
+public:
+    void authenticate(std::shared_ptr<User> user) {
+        user->login();
+    }
+
+    void logout(std::shared_ptr<User> user) {
+        user->logout();
+    }
+};
+
+// File Storage Service
+class FileStorageService {
 public:
     void uploadFile(const std::shared_ptr<File>& file) {
-        std::cout << "Storing file: " << file->fileName << std::endl;
-        file->upload();
+        std::lock_guard<std::mutex> lock(global_mutex);
+        std::cout << "[File Storage Service] Uploading file: " << file->fileName << ", Size: " << file->fileSize << " bytes" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2)); // Simulate upload
+        std::cout << "[File Storage Service] File " << file->fileName << " uploaded successfully!" << std::endl;
     }
 
-    void syncFile(const std::shared_ptr<File>& file) {
-        std::cout << "Syncing file: " << file->fileName << std::endl;
-        file->sync();
+    void downloadFile(const std::shared_ptr<File>& file) {
+        std::cout << "[File Storage Service] Downloading file: " << file->fileName << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate download
+        std::cout << "[File Storage Service] File " << file->fileName << " downloaded successfully!" << std::endl;
     }
 };
 
+// Sync Service
 class SyncService {
 public:
     void syncFiles(const std::vector<std::shared_ptr<File>>& files) {
-        for (auto& file : files) {
-            std::cout << "Syncing file: " << file->fileName << std::endl;
-            file->sync();
+        for (const auto& file : files) {
+            std::cout << "[Sync Service] Synchronizing file: " << file->fileName << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Simulate sync
+            std::cout << "[Sync Service] File " << file->fileName << " synchronized successfully!" << std::endl;
         }
     }
 };
 
-// Main function to simulate file upload and sync
+// Collaboration Service
+class CollaborationService {
+public:
+    void shareFile(const std::shared_ptr<File>& file, const std::shared_ptr<User>& user) {
+        std::cout << "[Collaboration Service] Sharing file: " << file->fileName << " with user: " << user->userName << std::endl;
+    }
+
+    void notifyChanges(const std::shared_ptr<File>& file) {
+        std::cout << "[Collaboration Service] Notifying users about changes to file: " << file->fileName << std::endl;
+    }
+};
+
+// Versioning Service
+class VersioningService {
+public:
+    void trackChanges(const std::shared_ptr<File>& file) {
+        file->updateVersion();
+        std::cout << "[Versioning Service] Tracking changes to file: " << file->fileName << ", Current Version: " << file->version << std::endl;
+    }
+
+    void restoreVersion(const std::shared_ptr<File>& file, const std::string& version) {
+        std::cout << "[Versioning Service] Restoring file: " << file->fileName << " to version " << version << std::endl;
+    }
+};
+
+// Main function
 int main() {
     // Create Users
     auto user1 = std::make_shared<User>("1", "Alice", "alice@example.com");
     auto user2 = std::make_shared<User>("2", "Bob", "bob@example.com");
 
+    // Authentication Service
+    AuthenticationService authService;
+    authService.authenticate(user1);
+
     // Create Files
-    std::shared_ptr<File> file1 = std::make_shared<File>("F1", "document1.txt", 1024, user1);
-    std::shared_ptr<File> file2 = std::make_shared<File>("F2", "image2.jpg", 2048, user2);
+    auto file1 = std::make_shared<File>("F1", "document1.txt", 1024, user1);
+    auto file2 = std::make_shared<File>("F2", "image2.jpg", 2048, user2);
 
-    // Create Storage and Sync Services
-    StorageService storageService;
+    // File Storage Service
+    FileStorageService storageService;
+    storageService.uploadFile(file1);
+    storageService.uploadFile(file2);
+
+    // Sync Service
     SyncService syncService;
+    syncService.syncFiles({file1, file2});
 
-    // Create Threads for Upload and Sync
-    std::vector<std::thread> threads;
-    threads.push_back(std::thread(&StorageService::uploadFile, &storageService, file1));
-    threads.push_back(std::thread(&StorageService::uploadFile, &storageService, file2));
+    // Collaboration Service
+    CollaborationService collabService;
+    collabService.shareFile(file1, user2);
+    collabService.notifyChanges(file1);
 
-    for (auto& t : threads) {
-        t.join();
-    }
+    // Versioning Service
+    VersioningService versionService;
+    versionService.trackChanges(file1);
+    versionService.restoreVersion(file1, "1.0");
 
-    // Now syncing files
-    std::vector<std::shared_ptr<File>> filesToSync = { file1, file2 };
-    syncService.syncFiles(filesToSync);
-
-    // Logout users after task completion
-    user1->logout();
-    user2->logout();
+    // Logout user after task completion
+    authService.logout(user1);
 
     return 0;
 }
 
+
 ```
 
-### The diagram outlines the flow of file upload and synchronization between client, file service, storage service, and sync service.
-
-## Conclusion
-
-This document provides an overview of the Google Drive architecture, including high-level design, low-level design, schema, and a simple C++ code example for multithreading and file synchronization. The concepts discussed here apply to scalable cloud storage systems.
