@@ -9,34 +9,35 @@
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
-class Solution 
+class Solution
 {
 public:
 
     int ans;
-    int fun(TreeNode* root) 
+    int minCameraCoverUtil(TreeNode* root)
     {
         if(!root) return 1;
 
-        int k1 = fun(root->left);
-        int k2 = fun(root->right);
+        int k1 = minCameraCoverUtil(root->left);
+        int k2 = minCameraCoverUtil(root->right);
 
-        if(k1==0 || k2==0) 
+        if(k1==0 || k2==0)
         {
-            ans++; 
+            ans++;
             return 2;
         }
         if(k1==2 || k2==2)
         {
             return 1;
         }
-        
+
         return 0;
 
     }
-    int minCameraCover(TreeNode* root) 
-	{
+
+    int minCameraCover(TreeNode* root)
+    {
         ans=0;
-        return fun(root)==0 ? ans+1 : ans;
+        return minCameraCoverUtil(root)==0 ? ans+1 : ans;
     }
 };
