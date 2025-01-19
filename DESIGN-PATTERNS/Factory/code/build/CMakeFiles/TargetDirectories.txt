@@ -1,3 +1,0 @@
-/home/gakumar/LeetCode-Mustdo-500/DESIGN-PATTERNS/Factory/code/build/CMakeFiles/FDP.dir
-/home/gakumar/LeetCode-Mustdo-500/DESIGN-PATTERNS/Factory/code/build/CMakeFiles/edit_cache.dir
-/home/gakumar/LeetCode-Mustdo-500/DESIGN-PATTERNS/Factory/code/build/CMakeFiles/rebuild_cache.dir
