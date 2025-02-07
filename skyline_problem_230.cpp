@@ -46,3 +46,10 @@ public:
     }
 };
 
+//Approach - 
+Approach
+
+Convert each building into two segments.
+Sort the segments.
+If second value of segment is less than zero, it is left boundary, else it is right boundary.
+If current maximum is not equal to maximum previous height, it is a key point.
