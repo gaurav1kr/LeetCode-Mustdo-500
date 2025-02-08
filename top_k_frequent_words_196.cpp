@@ -41,3 +41,13 @@ public:
         return result;
     }
 };
+
+Frequency Count: Use a unordered_map to store the frequency of each word in the input list.
+Min-Heap for Top K Elements:
+A custom comparator ensures that the heap keeps the top k frequent words.
+Words with higher frequency are given priority. If two words have the same frequency, lexicographically smaller words come first.
+Reverse the Result: Since the heap stores the least frequent words at the top, the result needs to be reversed after extraction to provide the most frequent words in order.
+This approach ensures efficient handling of the input, with a time complexity of:
+
+O(N log k) for maintaining the heap, where N is the number of unique words.
+O(k log k) for reversing the result.
