@@ -55,7 +55,6 @@ public:
             }
         }
         
-        throw invalid_argument("Input arrays are not sorted");
     }
 };
 ```
