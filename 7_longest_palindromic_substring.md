@@ -52,3 +52,60 @@ For example, if `s = "babad"`, the transformed string becomes:
 - **Space Complexity is also \( O(n) \)** due to the additional storage required.
 
 This implementation of **Manacher's Algorithm** is one of the fastest ways to find the longest palindromic substring. 🚀
+
+```
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.empty()) return "";
+
+        // Transform the input string to handle even-length palindromes easily
+        string t = preprocess(s);
+        int n = t.size();
+        vector<int> p(n, 0);  // p[i] stores the radius of the palindrome centered at i
+        int c = 0, r = 0;  // Center and right boundary of the current palindrome
+        int maxLen = 0, centerIndex = 0;
+
+        for (int i = 0; i < n; i++) {
+            int mirror = 2 * c - i;  // Mirror position of i around center c
+
+            // Use previously computed palindrome lengths if within the current boundary
+            if (i < r) {
+                p[i] = min(r - i, p[mirror]);
+            }
+
+            // Expand palindrome centered at i
+            while (i + p[i] + 1 < n && i - p[i] - 1 >= 0 && t[i + p[i] + 1] == t[i - p[i] - 1]) {
+                p[i]++;
+            }
+
+            // Update center and right boundary if the expanded palindrome goes beyond r
+            if (i + p[i] > r) {
+                c = i;
+                r = i + p[i];
+            }
+
+            // Track the longest palindrome found
+            if (p[i] > maxLen) {
+                maxLen = p[i];
+                centerIndex = i;
+            }
+        }
+
+        // Extract longest palindromic substring from original string
+        int start = (centerIndex - maxLen) / 2;
+        return s.substr(start, maxLen);
+    }
+
+private:
+    string preprocess(const string& s) {
+        // Insert '#' between characters and add sentinels to avoid boundary checks
+        string t = "^";
+        for (char c : s) {
+            t += "#" + string(1, c);
+        }
+        t += "#$";
+        return t;
+    }
+};
+```
