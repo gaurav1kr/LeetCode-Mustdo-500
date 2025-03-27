@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # ✅ Path to Markdown File
-MD_FILE_PATH = "/home/gakumar/LeetCode-Mustdo-500/Easy/next.md"
+MD_FILE_PATH = "/home/gakumar/LeetCode-Mustdo-500/Easy/final.md"
 
 # ✅ Cookie storage file
 COOKIE_FILE = "leetcode_cookies.pkl"
@@ -137,24 +137,23 @@ def submit_solution(problem):
 
         time.sleep(5)  # Ensure code is fully inserted
         
-        # Locate Submit button
-        submit_button = WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))
-        )
-        driver.execute_script("arguments[0].scrollIntoView();", submit_button)
-        time.sleep(2)
-        
-        # Move mouse and click using ActionChains
-        try:
-            ActionChains(driver).move_to_element(submit_button).click().perform()
-            print("✅ Submit button clicked via ActionChains!")
-        except:
-            driver.execute_script("arguments[0].click();", submit_button)
-            print("✅ Submit button clicked via JavaScript!")
-        
+        # ✅ Simulate Ctrl+Enter to submit the solution
+        driver.execute_script("""
+            let event = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                keyCode: 13,
+                which: 13,
+                ctrlKey: true,
+                bubbles: true
+            });
+            document.activeElement.dispatchEvent(event);
+        """)
+        print("🚀 Simulated Ctrl+Enter using JavaScript!")
+
         time.sleep(10)  # Wait for submission
     except Exception as e:
-        print(f"❌ Error clicking Submit button: {e}")
+        print(f"❌ Error submitting solution: {e}")
         driver.save_screenshot("submit_debug.png")
         print("📸 Screenshot saved as 'submit_debug.png' - Check if Submit button exists!")
 
