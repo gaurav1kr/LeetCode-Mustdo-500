@@ -1,7 +1,5 @@
-# LeetCode Optimized C++ Solutions
 
-## 1. Two Sum
-**[Problem Link](https://leetcode.com/problems/two-sum/)**  
+##1 ****[Problem Link]https://leetcode.com/problems/two-sum/****  
 **Approach:** Use an unordered map (hash table) to store the indices of visited elements and find the complement in O(1) time.  
 **Time Complexity:** O(n)
 
@@ -11,23 +9,26 @@
 
 using namespace std;
 
-vector<int> twoSum(vector<int>& nums, int target) {
-    unordered_map<int, int> numIndex;
-    for (int i = 0; i < nums.size(); i++) {
-        int complement = target - nums[i];
-        if (numIndex.find(complement) != numIndex.end()) {
-            return {numIndex[complement], i};
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> numIndex;
+        for (int i = 0; i < nums.size(); i++) {
+            int complement = target - nums[i];
+            if (numIndex.find(complement) != numIndex.end()) {
+                return {numIndex[complement], i};
+            }
+            numIndex[nums[i]] = i;
         }
-        numIndex[nums[i]] = i;
+        return {};
     }
-    return {};
-}
+};
 ```
 
 ---
 
-## 2. Maximum Subarray
-**[Problem Link](https://leetcode.com/problems/maximum-subarray/)**  
+
+##2 ****[Problem Link]https://leetcode.com/problems/maximum-subarray/****  
 **Approach:** Use **Kadane’s Algorithm** to find the maximum sum subarray.  
 **Time Complexity:** O(n)
 
@@ -36,20 +37,23 @@ vector<int> twoSum(vector<int>& nums, int target) {
 
 using namespace std;
 
-int maxSubArray(vector<int>& nums) {
-    int maxSum = nums[0], currentSum = nums[0];
-    for (int i = 1; i < nums.size(); i++) {
-        currentSum = max(nums[i], currentSum + nums[i]);
-        maxSum = max(maxSum, currentSum);
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int maxSum = nums[0], currentSum = nums[0];
+        for (int i = 1; i < nums.size(); i++) {
+            currentSum = max(nums[i], currentSum + nums[i]);
+            maxSum = max(maxSum, currentSum);
+        }
+        return maxSum;
     }
-    return maxSum;
-}
+};
 ```
 
 ---
 
-## 3. Best Time to Buy and Sell Stock
-**[Problem Link](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)**  
+
+##3 ****[Problem Link]https://leetcode.com/problems/best-time-to-buy-and-sell-stock/****  
 **Approach:** Track the minimum price so far and compute the max profit.  
 **Time Complexity:** O(n)
 
@@ -58,20 +62,23 @@ int maxSubArray(vector<int>& nums) {
 
 using namespace std;
 
-int maxProfit(vector<int>& prices) {
-    int minPrice = INT_MAX, maxProfit = 0;
-    for (int price : prices) {
-        minPrice = min(minPrice, price);
-        maxProfit = max(maxProfit, price - minPrice);
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int minPrice = INT_MAX, maxProfit = 0;
+        for (int price : prices) {
+            minPrice = min(minPrice, price);
+            maxProfit = max(maxProfit, price - minPrice);
+        }
+        return maxProfit;
     }
-    return maxProfit;
-}
+};
 ```
 
 ---
 
-## 4. Valid Parentheses
-**[Problem Link](https://leetcode.com/problems/valid-parentheses/)**  
+
+##4 ****[Problem Link]https://leetcode.com/problems/valid-parentheses/****  
 **Approach:** Use a stack to match opening and closing brackets.  
 **Time Complexity:** O(n)
 
@@ -82,121 +89,80 @@ int maxProfit(vector<int>& prices) {
 
 using namespace std;
 
-bool isValid(string s) {
-    stack<char> st;
-    unordered_map<char, char> pairs = {{')', '('}, {']', '['}, {'}', '{'}};
-    
-    for (char c : s) {
-        if (pairs.count(c)) {
-            if (st.empty() || st.top() != pairs[c]) return false;
-            st.pop();
-        } else {
-            st.push(c);
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> st;
+        unordered_map<char, char> pairs = {{')', '('}, {']', '['}, {'}', '{'}};
+        
+        for (char c : s) {
+            if (pairs.count(c)) {
+                if (st.empty() || st.top() != pairs[c]) return false;
+                st.pop();
+            } else {
+                st.push(c);
+            }
         }
+        return st.empty();
     }
-    return st.empty();
-}
+};
 ```
 
 ---
 
-## 5. Reverse Linked List
-**[Problem Link](https://leetcode.com/problems/reverse-linked-list/)**  
+
+##5 ****[Problem Link]https://leetcode.com/problems/reverse-linked-list/****  
 **Approach:** Use an iterative method with three pointers.  
 **Time Complexity:** O(n)
 
 ```cpp
-struct ListNode {
-    int val;
-    ListNode* next;
-    ListNode(int x) : val(x), next(nullptr) {}
-};
-
-ListNode* reverseList(ListNode* head) {
-    ListNode *prev = nullptr, *curr = head;
-    while (curr) {
-        ListNode* next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode *prev = nullptr, *curr = head;
+        while (curr) {
+            ListNode* next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
     }
-    return prev;
-}
+};
 ```
 
 ---
 
-## 6. Merge Two Sorted Lists
-**[Problem Link](https://leetcode.com/problems/merge-two-sorted-lists/)**  
+
+##6 ****[Problem Link]https://leetcode.com/problems/merge-two-sorted-lists/****  
 **Approach:** Use a dummy node and merge iteratively.  
 **Time Complexity:** O(n + m)
 
 ```cpp
-ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-    ListNode dummy(0), *tail = &dummy;
-    while (l1 && l2) {
-        if (l1->val < l2->val) {
-            tail->next = l1;
-            l1 = l1->next;
-        } else {
-            tail->next = l2;
-            l2 = l2->next;
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0), *tail = &dummy;
+        while (l1 && l2) {
+            if (l1->val < l2->val) {
+                tail->next = l1;
+                l1 = l1->next;
+            } else {
+                tail->next = l2;
+                l2 = l2->next;
+            }
+            tail = tail->next;
         }
-        tail = tail->next;
+        tail->next = l1 ? l1 : l2;
+        return dummy.next;
     }
-    tail->next = l1 ? l1 : l2;
-    return dummy.next;
-}
-```
-
----
-
-## 7. Climbing Stairs
-**[Problem Link](https://leetcode.com/problems/climbing-stairs/)**  
-**Approach:** Fibonacci approach using dynamic programming.  
-**Time Complexity:** O(n)
-
-```cpp
-int climbStairs(int n) {
-    if (n <= 2) return n;
-    int first = 1, second = 2;
-    for (int i = 3; i <= n; i++) {
-        int third = first + second;
-        first = second;
-        second = third;
-    }
-    return second;
-}
-```
-
----
-
-## 8. Symmetric Tree
-**[Problem Link](https://leetcode.com/problems/symmetric-tree/)**  
-**Approach:** Use DFS to compare left and right subtrees recursively.  
-**Time Complexity:** O(n)
-
-```cpp
-struct TreeNode {
-    int val;
-    TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
-
-bool isMirror(TreeNode* t1, TreeNode* t2) {
-    if (!t1 || !t2) return t1 == t2;
-    return (t1->val == t2->val) && isMirror(t1->left, t2->right) && isMirror(t1->right, t2->left);
-}
-
-bool isSymmetric(TreeNode* root) {
-    return !root || isMirror(root->left, root->right);
-}
 ```
 
 ---
 
-## 9. Single Number
-**[Problem Link](https://leetcode.com/problems/single-number/)**  
+
+##7 ****[Problem Link]https://leetcode.com/problems/single-number/****  
 **Approach:** Use XOR to cancel out duplicates.  
 **Time Complexity:** O(n)
 
@@ -205,17 +171,20 @@ bool isSymmetric(TreeNode* root) {
 
 using namespace std;
 
-int singleNumber(vector<int>& nums) {
-    int result = 0;
-    for (int num : nums) result ^= num;
-    return result;
-}
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int result = 0;
+        for (int num : nums) result ^= num;
+        return result;
+    }
+};
 ```
 
 ---
 
-## 10. Move Zeroes
-**[Problem Link](https://leetcode.com/problems/move-zeroes/)**  
+
+##8 ****[Problem Link]https://leetcode.com/problems/move-zeroes/****  
 **Approach:** Use two pointers to shift non-zero elements forward.  
 **Time Complexity:** O(n)
 
@@ -224,20 +193,21 @@ int singleNumber(vector<int>& nums) {
 
 using namespace std;
 
-void moveZeroes(vector<int>& nums) {
-    int lastNonZero = 0;
-    for (int i = 0; i < nums.size(); i++) {
-        if (nums[i] != 0) {
-            swap(nums[i], nums[lastNonZero]);
-            lastNonZero++;
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int lastNonZero = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] != 0) {
+                swap(nums[i], nums[lastNonZero]);
+                lastNonZero++;
+            }
         }
     }
-}
-```# LeetCode Solutions in C++
+};
+```
 
-This document provides optimized C++ solutions for a set of LeetCode problems. Each problem includes an approach explanation, time complexity analysis, and the corresponding C++ code.
-
-## 1. Intersection of Two Arrays
+##9 ****[Problem Link]https://leetcode.com/problems/intersection-of-two-arrays/**
 
 **Approach:** Use an unordered set for quick lookup and another set to store the intersection.
 
@@ -248,18 +218,21 @@ This document provides optimized C++ solutions for a set of LeetCode problems. E
 #include <unordered_set>
 using namespace std;
 
-vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
-    unordered_set<int> set1(nums1.begin(), nums1.end()), result;
-    for (int num : nums2) {
-        if (set1.count(num)) result.insert(num);
+class Solution {
+public:
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> set1(nums1.begin(), nums1.end()), result;
+        for (int num : nums2) {
+            if (set1.count(num)) result.insert(num);
+        }
+        return vector<int>(result.begin(), result.end());
     }
-    return vector<int>(result.begin(), result.end());
-}
+};
 ```
 
 ---
 
-## 2. Longest Palindrome
+##10 ****[Problem Link]https://leetcode.com/problems/longest-palindrome/**
 
 **Approach:** Use an unordered map to count character frequencies.
 
@@ -270,42 +243,42 @@ vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
 #include <unordered_map>
 using namespace std;
 
-int longestPalindrome(string s) {
-    unordered_map<char, int> count;
-    for (char c : s) count[c]++;
-    int length = 0, odd = 0;
-    for (auto& p : count) {
-        length += p.second / 2 * 2;
-        if (p.second % 2) odd = 1;
+class Solution {
+public:
+    int longestPalindrome(string s) {
+        unordered_map<char, int> count;
+        for (char c : s) count[c]++;
+        int length = 0, odd = 0;
+        for (auto& p : count) {
+            length += p.second / 2 * 2;
+            if (p.second % 2) odd = 1;
+        }
+        return length + odd;
     }
-    return length + odd;
-}
+};
 ```
 
 ---
 
-## 3. Search in a Binary Search Tree
+##11 ****[Problem Link]https://leetcode.com/problems/search-in-a-binary-search-tree/**
 
 **Approach:** Recursively traverse the BST to find the target value.
 
 **Time Complexity:** O(h) (where h is the height of the tree)
 
 ```cpp
-struct TreeNode {
-    int val;
-    TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+class Solution {
+public:
+    TreeNode* searchBST(TreeNode* root, int val) {
+        if (!root || root->val == val) return root;
+        return val < root->val ? searchBST(root->left, val) : searchBST(root->right, val);
+    }
 };
-
-TreeNode* searchBST(TreeNode* root, int val) {
-    if (!root || root->val == val) return root;
-    return val < root->val ? searchBST(root->left, val) : searchBST(root->right, val);
-}
 ```
 
 ---
 
-## 4. Reverse Words in a String III
+##12 ****[Problem Link]https://leetcode.com/problems/reverse-words-in-a-string-iii/**
 
 **Approach:** Reverse each word in place.
 
@@ -315,21 +288,24 @@ TreeNode* searchBST(TreeNode* root, int val) {
 #include <string>
 using namespace std;
 
-string reverseWords(string s) {
-    int i = 0, n = s.size();
-    for (int j = 0; j <= n; j++) {
-        if (j == n || s[j] == ' ') {
-            reverse(s.begin() + i, s.begin() + j);
-            i = j + 1;
+class Solution {
+public:
+    string reverseWords(string s) {
+        int i = 0, n = s.size();
+        for (int j = 0; j <= n; j++) {
+            if (j == n || s[j] == ' ') {
+                reverse(s.begin() + i, s.begin() + j);
+                i = j + 1;
+            }
         }
+        return s;
     }
-    return s;
-}
+};
 ```
 
 ---
 
-## 5. Excel Sheet Column Number
+##13 ****[Problem Link]https://leetcode.com/problems/excel-sheet-column-number/**
 
 **Approach:** Convert from base-26 notation to decimal.
 
@@ -339,18 +315,21 @@ string reverseWords(string s) {
 #include <string>
 using namespace std;
 
-int titleToNumber(string columnTitle) {
-    int result = 0;
-    for (char c : columnTitle) {
-        result = result * 26 + (c - 'A' + 1);
+class Solution {
+public:
+    int titleToNumber(string columnTitle) {
+        int result = 0;
+        for (char c : columnTitle) {
+            result = result * 26 + (c - 'A' + 1);
+        }
+        return result;
     }
-    return result;
-}
+};
 ```
 
 ---
 
-## 6. Design HashMap
+##14 ****[Problem Link]https://leetcode.com/problems/design-hashmap/**
 
 **Approach:** Use an array of linked lists for collision handling.
 
@@ -373,32 +352,29 @@ public:
 
 ---
 
-## 7. Convert Binary Number in a Linked List to Integer
+##15 ****[Problem Link]https://leetcode.com/problems/convert-binary-number-in-a-linked-list-to-integer/**
 
 **Approach:** Use bitwise operations to compute the integer value.
 
 **Time Complexity:** O(n)
 
 ```cpp
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(nullptr) {}
-};
-
-int getDecimalValue(ListNode* head) {
-    int num = 0;
-    while (head) {
-        num = (num << 1) | head->val;
-        head = head->next;
+class Solution {
+public:
+    int getDecimalValue(ListNode* head) {
+        int num = 0;
+        while (head) {
+            num = (num << 1) | head->val;
+            head = head->next;
+        }
+        return num;
     }
-    return num;
-}
+};
 ```
 
 ---
 
-## 8. Max Consecutive Ones
+##16 ****[Problem Link]https://leetcode.com/problems/max-consecutive-ones/**
 
 **Approach:** Iterate through the array while keeping track of max consecutive ones.
 
@@ -408,19 +384,22 @@ int getDecimalValue(ListNode* head) {
 #include <vector>
 using namespace std;
 
-int findMaxConsecutiveOnes(vector<int>& nums) {
-    int maxCount = 0, count = 0;
-    for (int num : nums) {
-        count = (num == 1) ? count + 1 : 0;
-        maxCount = max(maxCount, count);
+class Solution {
+public:
+    int findMaxConsecutiveOnes(vector<int>& nums) {
+        int maxCount = 0, count = 0;
+        for (int num : nums) {
+            count = (num == 1) ? count + 1 : 0;
+            maxCount = max(maxCount, count);
+        }
+        return maxCount;
     }
-    return maxCount;
-}
+};
 ```
 
 ---
 
-## 9. Running Sum of 1D Array
+##17 ****[Problem Link]https://leetcode.com/problems/running-sum-of-1d-array/**
 
 **Approach:** Maintain a running sum while iterating through the array.
 
@@ -430,17 +409,20 @@ int findMaxConsecutiveOnes(vector<int>& nums) {
 #include <vector>
 using namespace std;
 
-vector<int> runningSum(vector<int>& nums) {
-    for (int i = 1; i < nums.size(); i++) {
-        nums[i] += nums[i - 1];
+class Solution {
+public:
+    vector<int> runningSum(vector<int>& nums) {
+        for (int i = 1; i < nums.size(); i++) {
+            nums[i] += nums[i - 1];
+        }
+        return nums;
     }
-    return nums;
-}
+};
 ```
 
 ---
 
-## 10. Pascal's Triangle II
+##18 ****[Problem Link]https://leetcode.com/problems/pascals-triangle-ii/**
 
 **Approach:** Use dynamic programming with a single vector.
 
@@ -450,21 +432,25 @@ vector<int> runningSum(vector<int>& nums) {
 #include <vector>
 using namespace std;
 
-vector<int> getRow(int rowIndex) {
-    vector<int> row(rowIndex + 1, 1);
-    for (int i = 1; i < rowIndex; i++) {
-        for (int j = i; j > 0; j--) {
-            row[j] += row[j - 1];
+class Solution {
+public:
+    vector<int> getRow(int rowIndex) {
+        vector<int> row(rowIndex + 1, 1);
+        for (int i = 1; i < rowIndex; i++) {
+            for (int j = i; j > 0; j--) {
+                row[j] += row[j - 1];
+            }
         }
+        return row;
     }
-    return row;
-}
-```
-# Optimized C++ Solutions for LeetCode Problems
+};
 
-## 1. Increasing Order Search Tree
+##19 ****[Problem Link]https://leetcode.com/problems/increasing-order-search-tree/**
+
 **Approach:** Perform an in-order traversal and store nodes in a new tree.
+
 **Time Complexity:** O(N)
+
 ```cpp
 class Solution {
 public:
@@ -478,9 +464,14 @@ public:
 };
 ```
 
-## 2. Find Common Characters
+---
+
+##20 ****[Problem Link]https://leetcode.com/problems/find-common-characters/**
+
 **Approach:** Use frequency arrays to track character counts.
+
 **Time Complexity:** O(N*M)
+
 ```cpp
 class Solution {
 public:
@@ -501,9 +492,14 @@ public:
 };
 ```
 
-## 3. Shortest Distance to a Character
+---
+
+##21 ****[Problem Link]https://leetcode.com/problems/shortest-distance-to-a-character/**
+
 **Approach:** Use two passes (left-to-right and right-to-left) to track distances.
+
 **Time Complexity:** O(N)
+
 ```cpp
 class Solution {
 public:
@@ -524,271 +520,137 @@ public:
 };
 ```
 
-## 4. Can Place Flowers
-**Approach:** Iterate and check adjacent spots for availability.
-**Time Complexity:** O(N)
+---
+
+
+##22 ****[Problem Link]https://leetcode.com/problems/last-stone-weight/**
+**Approach:**  
+- Use a max heap (priority queue) to efficiently get the two heaviest stones.
+- Pop the two heaviest stones, compute the difference, and push back the result if non-zero.
+- Continue this process until one or zero stones remain.
+
+**Time Complexity:** O(N log N) due to heap operations.
+
 ```cpp
 class Solution {
 public:
-    bool canPlaceFlowers(vector<int>& flowerbed, int n) {
-        int count = 0;
-        for (int i = 0; i < flowerbed.size(); ++i) {
-            if (flowerbed[i] == 0 && (i == 0 || flowerbed[i - 1] == 0) && (i == flowerbed.size() - 1 || flowerbed[i + 1] == 0)) {
-                flowerbed[i] = 1;
-                count++;
-                if (count >= n) return true;
+    int lastStoneWeight(vector<int>& stones) {
+        priority_queue<int> maxHeap(stones.begin(), stones.end());
+        while (maxHeap.size() > 1) {
+            int stone1 = maxHeap.top(); maxHeap.pop();
+            int stone2 = maxHeap.top(); maxHeap.pop();
+            if (stone1 != stone2) {
+                maxHeap.push(stone1 - stone2);
             }
         }
-        return count >= n;
+        return maxHeap.empty() ? 0 : maxHeap.top();
     }
 };
 ```
 
-## 5. Contains Duplicate II
-**Approach:** Use an unordered_map to track indices.
-**Time Complexity:** O(N)
+---
+
+##23 ****[Problem Link]https://leetcode.com/problems/number-complement/**
+**Approach:**  
+- Find the highest bit position of the number.
+- Create a bitmask of all 1s up to that position.
+- XOR the number with the bitmask to flip its bits.
+
+**Time Complexity:** O(log N) since we iterate over the bits of the number.
+
 ```cpp
 class Solution {
 public:
-    bool containsNearbyDuplicate(vector<int>& nums, int k) {
-        unordered_map<int, int> mp;
-        for (int i = 0; i < nums.size(); ++i) {
-            if (mp.count(nums[i]) && i - mp[nums[i]] <= k)
-                return true;
-            mp[nums[i]] = i;
+    int findComplement(int num) {
+        int mask = 0, temp = num;
+        while (temp) {
+            mask = (mask << 1) | 1;
+            temp >>= 1;
+        }
+        return num ^ mask;
+    }
+};
+```
+
+---
+
+##24 ****[Problem Link]https://leetcode.com/problems/valid-perfect-square/**
+**Approach:**  
+- Use binary search to check if there exists an integer whose square equals `num`.
+
+**Time Complexity:** O(log N) due to binary search.
+
+```cpp
+class Solution {
+public:
+    bool isPerfectSquare(int num) {
+        long left = 1, right = num;
+        while (left <= right) {
+            long mid = left + (right - left) / 2;
+            long square = mid * mid;
+            if (square == num) return true;
+            if (square < num) left = mid + 1;
+            else right = mid - 1;
         }
         return false;
     }
 };
 ```
 
-## 6. Number of Good Pairs
-**Approach:** Use a frequency map to count occurrences.
-**Time Complexity:** O(N)
-```cpp
-class Solution {
-public:
-    int numIdenticalPairs(vector<int>& nums) {
-        unordered_map<int, int> freq;
-        int count = 0;
-        for (int num : nums) {
-            count += freq[num];
-            freq[num]++;
-        }
-        return count;
-    }
-};
-```
-
-## 7. Shuffle the Array
-**Approach:** Reconstruct array using interleaving.
-**Time Complexity:** O(N)
-```cpp
-class Solution {
-public:
-    vector<int> shuffle(vector<int>& nums, int n) {
-        vector<int> res;
-        for (int i = 0; i < n; ++i) {
-            res.push_back(nums[i]);
-            res.push_back(nums[i + n]);
-        }
-        return res;
-    }
-};
-```
-
-## 8. Kth Missing Positive Number
-**Approach:** Use binary search for optimized lookup.
-**Time Complexity:** O(log N)
-```cpp
-class Solution {
-public:
-    int findKthPositive(vector<int>& arr, int k) {
-        int left = 0, right = arr.size();
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (arr[mid] - (mid + 1) < k)
-                left = mid + 1;
-            else
-                right = mid;
-        }
-        return left + k;
-    }
-};
-```
-
-## 9. Peak Index in a Mountain Array
-**Approach:** Use binary search for efficient peak finding.
-**Time Complexity:** O(log N)
-```cpp
-class Solution {
-public:
-    int peakIndexInMountainArray(vector<int>& arr) {
-        int left = 0, right = arr.size() - 1;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (arr[mid] < arr[mid + 1])
-                left = mid + 1;
-            else
-                right = mid;
-        }
-        return left;
-    }
-};
-```
-
-## 10. Find Mode in Binary Search Tree
-**Approach:** Perform in-order traversal and track frequency.
-**Time Complexity:** O(N)
-```cpp
-class Solution {
-public:
-    vector<int> findMode(TreeNode* root) {
-        unordered_map<int, int> freq;
-        int maxFreq = 0;
-        vector<int> result;
-        function<void(TreeNode*)> inorder = [&](TreeNode* node) {
-            if (!node) return;
-            inorder(node->left);
-            maxFreq = max(maxFreq, ++freq[node->val]);
-            inorder(node->right);
-        };
-        inorder(root);
-        for (const auto& p : freq)
-            if (p.second == maxFreq)
-                result.push_back(p.first);
-        return result;
-    }
-};
-```# LeetCode Solutions
-
-## 1. Last Stone Weight
-**Problem:** Given an array of stones, repeatedly take the two heaviest stones and smash them. If they are of equal weight, both are destroyed; otherwise, the heavier stone is reduced by the weight of the lighter stone. Return the weight of the last remaining stone (or 0 if none remain).
-
-### Approach
-- Use a max heap (priority queue) to efficiently get the two heaviest stones.
-- Pop the two heaviest stones, compute the difference, and push back the result if non-zero.
-- Continue this process until one or zero stones remain.
-
-### Time Complexity
-- **O(N log N)** due to heap operations.
-
-### C++ Code
-```cpp
-#include <queue>
-#include <vector>
-using namespace std;
-
-int lastStoneWeight(vector<int>& stones) {
-    priority_queue<int> maxHeap(stones.begin(), stones.end());
-    while (maxHeap.size() > 1) {
-        int stone1 = maxHeap.top(); maxHeap.pop();
-        int stone2 = maxHeap.top(); maxHeap.pop();
-        if (stone1 != stone2) {
-            maxHeap.push(stone1 - stone2);
-        }
-    }
-    return maxHeap.empty() ? 0 : maxHeap.top();
-}
-```
-
 ---
 
-## 2. Number Complement
-### Approach
-- Find the highest bit position of the number.
-- Create a bitmask of all 1s up to that position.
-- XOR the number with the bitmask to flip its bits.
-
-### Time Complexity
-- **O(log N)** since we iterate over the bits of the number.
-
-### C++ Code
-```cpp
-int findComplement(int num) {
-    int mask = (1 << (int)log2(num) + 1) - 1;
-    return num ^ mask;
-}
-```
-
----
-
-## 3. Valid Perfect Square
-### Approach
-- Use binary search to check if there exists an integer whose square equals `num`.
-
-### Time Complexity
-- **O(log N)** due to binary search.
-
-### C++ Code
-```cpp
-bool isPerfectSquare(int num) {
-    long left = 1, right = num;
-    while (left <= right) {
-        long mid = left + (right - left) / 2;
-        long square = mid * mid;
-        if (square == num) return true;
-        if (square < num) left = mid + 1;
-        else right = mid - 1;
-    }
-    return false;
-}
-```
-
----
-
-## 4. Arranging Coins
-### Approach
+##25 ****[Problem Link]https://leetcode.com/problems/arranging-coins/**
+**Approach:**  
 - Use binary search to find the largest `k` such that `k(k+1)/2 ≤ n`.
 
-### Time Complexity
-- **O(log N)**.
+**Time Complexity:** O(log N).
 
-### C++ Code
 ```cpp
-int arrangeCoins(int n) {
-    long left = 0, right = n;
-    while (left <= right) {
-        long mid = left + (right - left) / 2;
-        long coins = mid * (mid + 1) / 2;
-        if (coins == n) return mid;
-        if (coins < n) left = mid + 1;
-        else right = mid - 1;
+class Solution {
+public:
+    int arrangeCoins(int n) {
+        long left = 0, right = n;
+        while (left <= right) {
+            long mid = left + (right - left) / 2;
+            long coins = mid * (mid + 1) / 2;
+            if (coins == n) return mid;
+            if (coins < n) left = mid + 1;
+            else right = mid - 1;
+        }
+        return right;
     }
-    return right;
-}
+};
 ```
 
 ---
 
-## 5. Flipping an Image
-### Approach
+##26 ****[Problem Link]https://leetcode.com/problems/flipping-an-image/**
+**Approach:**  
 - Reverse each row and flip bits (0 to 1 and 1 to 0).
 
-### Time Complexity
-- **O(N^2)**.
+**Time Complexity:** O(N^2).
 
-### C++ Code
 ```cpp
-vector<vector<int>> flipAndInvertImage(vector<vector<int>>& image) {
-    for (auto &row : image) {
-        reverse(row.begin(), row.end());
-        for (int &pixel : row) pixel ^= 1;
+class Solution {
+public:
+    vector<vector<int>> flipAndInvertImage(vector<vector<int>>& image) {
+        for (auto &row : image) {
+            reverse(row.begin(), row.end());
+            for (int &pixel : row) pixel ^= 1;
+        }
+        return image;
     }
-    return image;
-}
+};
 ```
 
 ---
 
-## 6. Kth Largest Element in a Stream
-### Approach
+##27 ****[Problem Link]https://leetcode.com/problems/kth-largest-element-in-a-stream/**
+**Approach:**  
 - Use a min-heap of size `k` to store the `k` largest elements.
 
-### Time Complexity
-- **O(log k)** per insert.
+**Time Complexity:** O(log k) per insert.
 
-### C++ Code
 ```cpp
 class KthLargest {
     priority_queue<int, vector<int>, greater<int>> minHeap;
@@ -808,103 +670,35 @@ public:
 
 ---
 
-## 7. Maximum Depth of N-ary Tree
-### Approach
+##28 ****[Problem Link]https://leetcode.com/problems/maximum-depth-of-n-ary-tree/**
+**Approach:**  
 - Use BFS or DFS to compute the depth.
 
-### Time Complexity
-- **O(N)**.
+**Time Complexity:** O(N).
 
-### C++ Code
 ```cpp
-int maxDepth(Node* root) {
-    if (!root) return 0;
-    int depth = 0;
-    for (Node* child : root->children) {
-        depth = max(depth, maxDepth(child));
+class Solution {
+public:
+    int maxDepth(Node* root) {
+        if (!root) return 0;
+        int depth = 0;
+        for (Node* child : root->children) {
+            depth = max(depth, maxDepth(child));
+        }
+        return depth + 1;
     }
-    return depth + 1;
-}
+};
 ```
 
 ---
 
-## 8. Degree of an Array
-### Approach
-- Count frequencies and track first and last positions of elements.
-- Compute the smallest subarray containing the most frequent number.
+##29 ****[Problem Link]https://leetcode.com/problems/count-negative-numbers-in-a-sorted-matrix/**
 
-### Time Complexity
-- **O(N)**.
+**Approach:**  
+- Use binary search in each row since they are sorted.  
+- Count the number of negatives efficiently.  
 
-### C++ Code
-```cpp
-int findShortestSubarray(vector<int>& nums) {
-    unordered_map<int, int> freq, first, last;
-    int degree = 0, minLen = nums.size();
-    for (int i = 0; i < nums.size(); i++) {
-        if (!first.count(nums[i])) first[nums[i]] = i;
-        last[nums[i]] = i;
-        degree = max(degree, ++freq[nums[i]]);
-    }
-    for (auto [num, count] : freq) {
-        if (count == degree) minLen = min(minLen, last[num] - first[num] + 1);
-    }
-    return minLen;
-}
-```
-
----
-
-## 9. Find the Difference
-### Approach
-- Use XOR to cancel out matching characters.
-
-### Time Complexity
-- **O(N)**.
-
-### C++ Code
-```cpp
-char findTheDifference(string s, string t) {
-    char result = 0;
-    for (char c : s) result ^= c;
-    for (char c : t) result ^= c;
-    return result;
-}
-```
-
----
-
-## 10. Minimum Absolute Difference in BST
-### Approach
-- Perform an in-order traversal and find the minimum difference between adjacent values.
-
-### Time Complexity
-- **O(N)**.
-
-### C++ Code
-```cpp
-int getMinimumDifference(TreeNode* root) {
-    int minDiff = INT_MAX, prev = -1;
-    function<void(TreeNode*)> dfs = [&](TreeNode* node) {
-        if (!node) return;
-        dfs(node->left);
-        if (prev != -1) minDiff = min(minDiff, node->val - prev);
-        prev = node->val;
-        dfs(node->right);
-    };
-    dfs(root);
-    return minDiff;
-}
-```# Optimized C++ Solutions for LeetCode Problems
-
-## 1. Count Negative Numbers in a Sorted Matrix
-
-**Approach:**
-- Use binary search in each row since they are sorted.
-- Count the number of negatives efficiently.
-
-**Time Complexity:** O(m log n)
+**Time Complexity:** O(m log n)  
 
 ```cpp
 class Solution {
@@ -920,12 +714,13 @@ public:
 ```
 
 ---
-## 2. Reshape the Matrix
 
-**Approach:**
-- Flatten the matrix and reshape it using indexing.
+##30 ****[Problem Link]https://leetcode.com/problems/reshape-the-matrix/**
 
-**Time Complexity:** O(m*n)
+**Approach:**  
+- Flatten the matrix and reshape it using indexing.  
+
+**Time Complexity:** O(m*n)  
 
 ```cpp
 class Solution {
@@ -942,12 +737,13 @@ public:
 ```
 
 ---
-## 3. Toeplitz Matrix
 
-**Approach:**
-- Check if each diagonal contains the same element.
+##31 ****[Problem Link]https://leetcode.com/problems/toeplitz-matrix/**
 
-**Time Complexity:** O(m*n)
+**Approach:**  
+- Check if each diagonal contains the same element.  
+
+**Time Complexity:** O(m*n)  
 
 ```cpp
 class Solution {
@@ -965,184 +761,17 @@ public:
 ```
 
 ---
-## 4. Range Sum Query - Immutable
 
-**Approach:**
-- Use prefix sum array.
-
-**Time Complexity:** O(1) per query
-
-```cpp
-class NumArray {
-    vector<int> prefixSum;
-public:
-    NumArray(vector<int>& nums) {
-        prefixSum.push_back(0);
-        for (int num : nums)
-            prefixSum.push_back(prefixSum.back() + num);
-    }
-    int sumRange(int left, int right) {
-        return prefixSum[right + 1] - prefixSum[left];
-    }
-};
-```
-
----
-## 5. Implement Stack using Queues
-
-**Approach:**
-- Use two queues to simulate stack behavior.
-
-**Time Complexity:** O(1) for push, O(n) for pop
+##19 ****[Problem Link]https://leetcode.com/problems/majority-element/****  
+**Approach:** Use **Boyer-Moore Voting Algorithm** to find the majority element.
+Maintain a `candidate` element and a `count`. Iterate through the array adjusting the count.  
+**Time Complexity:** O(N)
 
 ```cpp
-class MyStack {
-    queue<int> q;
-public:
-    void push(int x) {
-        q.push(x);
-        for (int i = 0; i < q.size() - 1; ++i) {
-            q.push(q.front());
-            q.pop();
-        }
-    }
-    int pop() {
-        int top = q.front();
-        q.pop();
-        return top;
-    }
-    int top() { return q.front(); }
-    bool empty() { return q.empty(); }
-};
-```
+#include <vector>
 
----
-## 6. Next Greater Element I
+using namespace std;
 
-**Approach:**
-- Use a stack to maintain the next greater element.
-
-**Time Complexity:** O(n)
-
-```cpp
-class Solution {
-public:
-    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
-        unordered_map<int, int> nge;
-        stack<int> s;
-        for (int num : nums2) {
-            while (!s.empty() && s.top() < num) {
-                nge[s.top()] = num;
-                s.pop();
-            }
-            s.push(num);
-        }
-        vector<int> res;
-        for (int num : nums1)
-            res.push_back(nge.count(num) ? nge[num] : -1);
-        return res;
-    }
-};
-```
-
----
-## 7. Sum of Root to Leaf Binary Numbers
-
-**Approach:**
-- Use DFS to traverse the tree and calculate sum.
-
-**Time Complexity:** O(n)
-
-```cpp
-class Solution {
-public:
-    int sumRootToLeaf(TreeNode* root, int sum = 0) {
-        if (!root) return 0;
-        sum = sum * 2 + root->val;
-        return root->left == root->right ? sum : sumRootToLeaf(root->left, sum) + sumRootToLeaf(root->right, sum);
-    }
-};
-```
-
----
-## 8. Set Mismatch
-
-**Approach:**
-- Use frequency count to find missing and duplicate numbers.
-
-**Time Complexity:** O(n)
-
-```cpp
-class Solution {
-public:
-    vector<int> findErrorNums(vector<int>& nums) {
-        vector<int> count(nums.size() + 1, 0);
-        for (int num : nums) count[num]++;
-        int dup = -1, missing = -1;
-        for (int i = 1; i < count.size(); i++) {
-            if (count[i] == 2) dup = i;
-            if (count[i] == 0) missing = i;
-        }
-        return {dup, missing};
-    }
-};
-```
-
----
-## 9. Rotate String
-
-**Approach:**
-- Check if `goal` is a substring of `s + s`.
-
-**Time Complexity:** O(n)
-
-```cpp
-class Solution {
-public:
-    bool rotateString(string s, string goal) {
-        return s.size() == goal.size() && (s + s).find(goal) != string::npos;
-    }
-};
-```
-
----
-## 10. Unique Email Addresses
-
-**Approach:**
-- Normalize emails and use a set to count unique ones.
-
-**Time Complexity:** O(n)
-
-```cpp
-class Solution {
-public:
-    int numUniqueEmails(vector<string>& emails) {
-        unordered_set<string> uniqueEmails;
-        for (string email : emails) {
-            string local, domain;
-            int i = 0;
-            while (i < email.size() && email[i] != '@' && email[i] != '+') {
-                if (email[i] != '.') local += email[i];
-                i++;
-            }
-            while (email[i] != '@') i++;
-            domain = email.substr(i);
-            uniqueEmails.insert(local + domain);
-        }
-        return uniqueEmails.size();
-    }
-};
-```# Optimized C++ Solutions for LeetCode Problems
-
-## 1. Majority Element
-**Problem Link:** [Majority Element](https://leetcode.com/problems/majority-element)
-
-### Approach:
-- Use **Boyer-Moore Voting Algorithm** to find the majority element.
-- Maintain a `candidate` element and a `count`. Iterate through the array adjusting the count.
-
-### Code:
-```cpp
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
@@ -1156,19 +785,12 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(N)**, where N is the number of elements in the array.
-
 ---
 
-## 2. Palindrome Linked List
-**Problem Link:** [Palindrome Linked List](https://leetcode.com/problems/palindrome-linked-list)
+##20 ****[Problem Link]https://leetcode.com/problems/palindrome-linked-list/****  
+**Approach:** Find the middle using slow and fast pointers, reverse the second half, and compare with the first half.  
+**Time Complexity:** O(N)
 
-### Approach:
-- Find the middle using slow and fast pointers.
-- Reverse the second half and compare it with the first half.
-
-### Code:
 ```cpp
 class Solution {
 public:
@@ -1192,18 +814,13 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(N)**, where N is the length of the linked list.
-
 ---
 
-## 3. Invert Binary Tree
-**Problem Link:** [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree)
 
-### Approach:
-- Recursively swap left and right children.
+##21 ****[Problem Link]https://leetcode.com/problems/invert-binary-tree/****  
+**Approach:** Recursively swap left and right children.  
+**Time Complexity:** O(N)
 
-### Code:
 ```cpp
 class Solution {
 public:
@@ -1217,19 +834,18 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(N)**, where N is the number of nodes in the tree.
-
 ---
 
-## 4. Min Stack
-**Problem Link:** [Min Stack](https://leetcode.com/problems/min-stack)
 
-### Approach:
-- Use a stack to store values and another stack to track the minimum values.
+##22 ****[Problem Link]https://leetcode.com/problems/min-stack/****  
+**Approach:** Use a stack to store values and another stack to track the minimum values.  
+**Time Complexity:** O(1) for all operations.
 
-### Code:
 ```cpp
+#include <stack>
+
+using namespace std;
+
 class MinStack {
     stack<int> s, min_s;
 public:
@@ -1246,19 +862,18 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(1)** for all operations.
-
 ---
 
-## 9. Search Insert Position
-**Problem Link:** [Search Insert Position](https://leetcode.com/problems/search-insert-position)
 
-### Approach:
-- Use binary search to find the correct position.
+##23 ****[Problem Link]https://leetcode.com/problems/search-insert-position/****  
+**Approach:** Use binary search to find the correct position.  
+**Time Complexity:** O(log N)
 
-### Code:
 ```cpp
+#include <vector>
+
+using namespace std;
+
 class Solution {
 public:
     int searchInsert(vector<int>& nums, int target) {
@@ -1274,19 +889,18 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(log N)**
-
 ---
 
-## 10. Find All Numbers Disappeared in an Array
-**Problem Link:** [Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array)
 
-### Approach:
-- Use marking technique to mark indices corresponding to seen numbers.
+##24 ****[Problem Link]https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/****  
+**Approach:** Use marking technique to mark indices corresponding to seen numbers.  
+**Time Complexity:** O(N)
 
-### Code:
 ```cpp
+#include <vector>
+
+using namespace std;
+
 class Solution {
 public:
     vector<int> findDisappearedNumbers(vector<int>& nums) {
@@ -1299,11 +913,124 @@ public:
 };
 ```
 
-### Time Complexity:
-- **O(N)**
-# Optimized C++ Solutions for LeetCode Problems
+---
 
-## 1. [Merge Two Binary Trees](https://leetcode.com/problems/merge-two-binary-trees)
+
+##25 ****[Problem Link]https://leetcode.com/problems/implement-queue-using-stacks/****  
+**Approach:** Use two stacks to simulate a queue.
+
+```cpp
+#include <stack>
+
+using namespace std;
+
+class MyQueue {
+    stack<int> s1, s2;
+public:
+    void push(int x) {
+        s1.push(x);
+    }
+    int pop() {
+        if (s2.empty()) {
+            while (!s1.empty()) {
+                s2.push(s1.top());
+                s1.pop();
+            }
+        }
+        int res = s2.top();
+        s2.pop();
+        return res;
+    }
+    int peek() {
+        if (s2.empty()) {
+            while (!s1.empty()) {
+                s2.push(s1.top());
+                s1.pop();
+            }
+        }
+        return s2.top();
+    }
+    bool empty() {
+        return s1.empty() && s2.empty();
+    }
+};
+```
+
+---
+
+
+##26 ****[Problem Link]https://leetcode.com/problems/valid-anagram/****  
+**Approach:** Count character frequencies and compare.  
+**Time Complexity:** O(N)
+
+```cpp
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.length() != t.length()) return false;
+        unordered_map<char, int> count;
+        for (char c : s) count[c]++;
+        for (char c : t) {
+            if (--count[c] < 0) return false;
+        }
+        return true;
+    }
+};
+```
+
+##27 ****[Problem Link]https://leetcode.com/problems/intersection-of-two-arrays-ii/****  
+**Approach:** Use a hash map to count occurrences and find the intersection.  
+**Time Complexity:** O(N)
+
+```cpp
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> count;
+        vector<int> result;
+        for (int num : nums1) count[num]++;
+        for (int num : nums2) {
+            if (count[num] > 0) {
+                result.push_back(num);
+                count[num]--;
+            }
+        }
+        return result;
+    }
+};
+```
+
+---
+
+
+##28 ****[Problem Link]https://leetcode.com/problems/power-of-three/****  
+**Approach:** Use modulo operation to check divisibility by 3.  
+**Time Complexity:** O(log N)
+
+```cpp
+class Solution {
+public:
+    bool isPowerOfThree(int n) {
+        if (n <= 0) return false;
+        while (n % 3 == 0) {
+            n /= 3;
+        }
+        return n == 1;
+    }
+};
+```
+
+##32 ****[Problem Link]https://leetcode.com/problems/merge-two-binary-trees**
 ### Approach:
 Use recursion to merge nodes from both trees. If a node exists in both trees, sum their values; otherwise, use the non-null node.
 ### Time Complexity: O(min(N, M))
@@ -1322,7 +1049,7 @@ public:
 };
 ```
 
-## 2. [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree)
+##33 ****[Problem Link]https://leetcode.com/problems/maximum-depth-of-binary-tree**
 ### Approach:
 Use depth-first search (DFS) to traverse the tree and compute the depth recursively.
 ### Time Complexity: O(N)
@@ -1337,7 +1064,7 @@ public:
 };
 ```
 
-## 3. [Convert Sorted Array to Binary Search Tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree)
+##34 ****[Problem Link]https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree**
 ### Approach:
 Use a divide-and-conquer approach to create a balanced BST by selecting the middle element as the root recursively.
 ### Time Complexity: O(N)
@@ -1359,7 +1086,7 @@ public:
 };
 ```
 
-## 4. [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array)
+##35 ****[Problem Link]https://leetcode.com/problems/remove-duplicates-from-sorted-array**
 ### Approach:
 Use a two-pointer technique to overwrite duplicate elements.
 ### Time Complexity: O(N)
@@ -1377,7 +1104,7 @@ public:
 };
 ```
 
-## 5. [Counting Bits](https://leetcode.com/problems/counting-bits)
+##36 ****[Problem Link]https://leetcode.com/problems/counting-bits**
 ### Approach:
 Use dynamic programming with the relation `dp[i] = dp[i / 2] + (i % 2)`.
 ### Time Complexity: O(N)
@@ -1393,7 +1120,7 @@ public:
 };
 ```
 
-## 6. [Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs)
+##37 ****[Problem Link]https://leetcode.com/problems/min-cost-climbing-stairs**
 ### Approach:
 Use dynamic programming to find the minimum cost to reach the top.
 ### Time Complexity: O(N)
@@ -1412,7 +1139,7 @@ public:
 };
 ```
 
-## 7. [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree)
+##38 ****[Problem Link]https://leetcode.com/problems/balanced-binary-tree**
 ### Approach:
 Use DFS to check the height of left and right subtrees.
 ### Time Complexity: O(N)
@@ -1433,7 +1160,7 @@ public:
 };
 ```
 
-## 8. [Palindrome Number](https://leetcode.com/problems/palindrome-number)
+##39 ****[Problem Link]https://leetcode.com/problems/palindrome-number**
 ### Approach:
 Reverse half of the number and compare with the other half.
 ### Time Complexity: O(logN)
@@ -1453,7 +1180,7 @@ public:
 };
 ```
 
-## 9. [Same Tree](https://leetcode.com/problems/same-tree)
+##40 ****[Problem Link]https://leetcode.com/problems/same-tree**
 ### Approach:
 Use recursion to check if both trees are identical.
 ### Time Complexity: O(N)
@@ -1468,7 +1195,7 @@ public:
 };
 ```
 
-## 10. [Lowest Common Ancestor of a BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree)
+##41 ****[Problem Link]https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree**
 ### Approach:
 Use the BST property to traverse to the LCA node.
 ### Time Complexity: O(H), where H is the height of the tree
@@ -1485,9 +1212,9 @@ public:
         return nullptr;
     }
 };
-```# LeetCode Solutions with Optimized C++ Code
+```
 
-## 1. [Path Sum](https://leetcode.com/problems/path-sum)
+##42 ****[Problem Link]https://leetcode.com/problems/path-sum**
 ### Approach:
 - Use DFS to traverse the tree.
 - Subtract the node value from the target sum at each step.
@@ -1504,7 +1231,7 @@ public:
 };
 ```
 
-## 2. [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree)
+##43 ****[Problem Link]https://leetcode.com/problems/subtree-of-another-tree**
 ### Approach:
 - Use DFS to check if two trees are identical.
 - Traverse the main tree and compare each node's subtree with the given subtree.
@@ -1523,7 +1250,7 @@ public:
 };
 ```
 
-## 3. [Missing Number](https://leetcode.com/problems/missing-number)
+##44 ****[Problem Link]https://leetcode.com/problems/missing-number**
 ### Approach:
 - Use the sum formula `(n * (n+1)) / 2` and subtract the sum of elements.
 
@@ -1539,7 +1266,7 @@ public:
 };
 ```
 
-## 4. [Pascal's Triangle](https://leetcode.com/problems/pascals-triangle)
+##45 ****[Problem Link]https://leetcode.com/problems/pascals-triangle**
 ### Approach:
 - Generate rows iteratively using previous row values.
 
@@ -1559,7 +1286,7 @@ public:
 };
 ```
 
-## 5. [Happy Number](https://leetcode.com/problems/happy-number)
+##46 ****[Problem Link]https://leetcode.com/problems/happy-number**
 ### Approach:
 - Use Floyd's cycle detection to detect loops.
 
@@ -1585,7 +1312,7 @@ public:
 };
 ```
 
-## 6. [Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list)
+##47 ****[Problem Link]https://leetcode.com/problems/middle-of-the-linked-list**
 ### Approach:
 - Use slow and fast pointers.
 
@@ -1603,7 +1330,7 @@ public:
 };
 ```
 
-## 7. [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted)
+##48 ****[Problem Link]https://leetcode.com/problems/two-sum-ii-input-array-is-sorted**
 ### Approach:
 - Use two pointers from left and right.
 
@@ -1623,7 +1350,7 @@ public:
 };
 ```
 
-## 8. [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string)
+##49 ****[Problem Link]https://leetcode.com/problems/first-unique-character-in-a-string**
 ### Approach:
 - Use a frequency map.
 
@@ -1639,7 +1366,7 @@ public:
 };
 ```
 
-## 9. [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array)
+##50 ****[Problem Link]https://leetcode.com/problems/squares-of-a-sorted-array**
 ### Approach:
 - Use two pointers from both ends of the array.
 
@@ -1658,7 +1385,7 @@ public:
 };
 ```
 
-## 10. [Remove Linked List Elements](https://leetcode.com/problems/remove-linked-list-elements)
+##51 ****[Problem Link]https://leetcode.com/problems/remove-linked-list-elements**
 ### Approach:
 - Use a dummy node and traverse the list.
 
@@ -1677,9 +1404,8 @@ public:
     }
 };
 ```
-# LeetCode Solutions in C++
 
-## 1. Island Perimeter
+##52 ****[Problem Link]https://leetcode.com/problems/island-perimeter**
 **Approach:**  
 Iterate through the grid and count the number of land cells. For each land cell, add 4 to the perimeter and subtract 2 for each adjacent land cell.
 
@@ -1705,7 +1431,7 @@ public:
 };
 ```
 
-## 2. Remove Duplicates from Sorted List
+##53 ****[Problem Link]https://leetcode.com/problems/remove-duplicates-from-sorted-list**
 **Approach:**  
 Use a single pass through the linked list to remove consecutive duplicate elements.
 
@@ -1728,7 +1454,7 @@ public:
 };
 ```
 
-## 3. Add Binary
+##54 ****[Problem Link]https://leetcode.com/problems/add-binary**
 **Approach:**  
 Traverse both strings from end to start, add digits with carry and construct the result.
 
@@ -1753,7 +1479,7 @@ public:
 };
 ```
 
-## 4. Valid Anagram
+##55 ****[Problem Link]https://leetcode.com/problems/valid-anagram**
 **Approach:**  
 Count the frequency of characters in both strings and compare.
 
@@ -1774,7 +1500,7 @@ public:
 };
 ```
 
-## 5. First Bad Version
+##56 ****[Problem Link]https://leetcode.com/problems/first-bad-version**
 **Approach:**  
 Use binary search to minimize API calls.
 
@@ -1795,7 +1521,7 @@ public:
 };
 ```
 
-## 6. Valid Palindrome II
+##57 ****[Problem Link]https://leetcode.com/problems/valid-palindrome-ii**
 **Approach:**  
 Use two pointers and allow at most one deletion.
 
@@ -1824,7 +1550,7 @@ public:
 };
 ```
 
-## 7. Delete Node in a Linked List
+##58 ****[Problem Link]https://leetcode.com/problems/delete-node-in-a-linked-list**
 **Approach:**  
 Copy the next node's value and delete it.
 
@@ -1840,7 +1566,7 @@ public:
 };
 ```
 
-## 8. Intersection of Two Arrays II
+##59 ****[Problem Link]https://leetcode.com/problems/intersection-of-two-arrays-ii**
 **Approach:**  
 Use a hashmap to count occurrences in one array and match with the other.
 
@@ -1864,7 +1590,7 @@ public:
 };
 ```
 
-## 9. Reverse String
+##60 ****[Problem Link]https://leetcode.com/problems/reverse-string**
 **Approach:**  
 Use two-pointer technique.
 
@@ -1882,7 +1608,7 @@ public:
 };
 ```
 
-## 10. Range Sum of BST
+##61 ****[Problem Link]https://leetcode.com/problems/range-sum-of-bst**
 **Approach:**  
 Use DFS to sum nodes within range.
 
@@ -1900,9 +1626,9 @@ public:
         return sum;
     }
 };
-```# Optimized C++ Solutions for LeetCode Problems
+```
 
-## 1. Binary Tree Postorder Traversal
+##62 ****[Problem Link]https://leetcode.com/problems/binary-tree-postorder-traversal**
 ### Approach
 We use an iterative approach with a stack to efficiently perform postorder traversal (Left, Right, Root).
 
@@ -1911,17 +1637,8 @@ We use an iterative approach with a stack to efficiently perform postorder trave
 
 ### C++ Code
 ```cpp
-#include <vector>
-#include <stack>
-using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
-
+class Solution {
+public:
 vector<int> postorderTraversal(TreeNode* root) {
     vector<int> result;
     if (!root) return result;
@@ -1944,21 +1661,21 @@ vector<int> postorderTraversal(TreeNode* root) {
     }
     return result;
 }
+};
 ```
 
 ---
-## 2. Is Subsequence
+##63 ****[Problem Link]https://leetcode.com/problems/is-subsequence**
 ### Approach
 Use two pointers to check if `s` is a subsequence of `t`.
 
 ### Time Complexity
-**O(n)** - We traverse `t` at most once.
+**O(n)**
 
 ### C++ Code
 ```cpp
-#include <string>
-using namespace std;
-
+class Solution {
+public:
 bool isSubsequence(string s, string t) {
     int i = 0, j = 0;
     while (i < s.size() && j < t.size()) {
@@ -1967,22 +1684,21 @@ bool isSubsequence(string s, string t) {
     }
     return i == s.size();
 }
+};
 ```
 
 ---
-## 3. Binary Tree Paths
+##64 ****[Problem Link]https://leetcode.com/problems/binary-tree-paths**
 ### Approach
 Use DFS with backtracking to generate all root-to-leaf paths.
 
 ### Time Complexity
-**O(n)** - We visit each node once.
+**O(n)**
 
 ### C++ Code
 ```cpp
-#include <vector>
-#include <string>
-using namespace std;
-
+class Solution {
+public:
 void dfs(TreeNode* root, string path, vector<string>& paths) {
     if (!root) return;
     path += to_string(root->val);
@@ -2000,21 +1716,21 @@ vector<string> binaryTreePaths(TreeNode* root) {
     dfs(root, "", paths);
     return paths;
 }
+};
 ```
 
 ---
-## 4. Minimum Depth of Binary Tree
+##65 ****[Problem Link]https://leetcode.com/problems/minimum-depth-of-binary-tree**
 ### Approach
 Use BFS to find the first leaf node.
 
 ### Time Complexity
-**O(n)** - We visit each node at most once.
+**O(n)**
 
 ### C++ Code
 ```cpp
-#include <queue>
-using namespace std;
-
+class Solution {
+public:
 int minDepth(TreeNode* root) {
     if (!root) return 0;
     queue<pair<TreeNode*, int>> q;
@@ -2027,10 +1743,11 @@ int minDepth(TreeNode* root) {
     }
     return 0;
 }
+};
 ```
 
 ---
-## 5. Binary Tree Preorder Traversal
+##66 ****[Problem Link]https://leetcode.com/problems/binary-tree-preorder-traversal**
 ### Approach
 Use an iterative approach with a stack.
 
@@ -2039,6 +1756,8 @@ Use an iterative approach with a stack.
 
 ### C++ Code
 ```cpp
+class Solution {
+public:
 vector<int> preorderTraversal(TreeNode* root) {
     vector<int> result;
     if (!root) return result;
@@ -2052,10 +1771,11 @@ vector<int> preorderTraversal(TreeNode* root) {
     }
     return result;
 }
+};
 ```
 
 ---
-## 6. Plus One
+##67 ****[Problem Link]https://leetcode.com/problems/plus-one**
 ### Approach
 Simulate addition from the least significant digit.
 
@@ -2064,9 +1784,8 @@ Simulate addition from the least significant digit.
 
 ### C++ Code
 ```cpp
-#include <vector>
-using namespace std;
-
+class Solution {
+public:
 vector<int> plusOne(vector<int>& digits) {
     int n = digits.size();
     for (int i = n - 1; i >= 0; i--) {
@@ -2079,10 +1798,11 @@ vector<int> plusOne(vector<int>& digits) {
     digits.insert(digits.begin(), 1);
     return digits;
 }
+};
 ```
 
 ---
-## 7. Backspace String Compare
+##68 ****[Problem Link]https://leetcode.com/problems/backspace-string-compare**
 ### Approach
 Use a stack to simulate typing.
 
@@ -2091,9 +1811,8 @@ Use a stack to simulate typing.
 
 ### C++ Code
 ```cpp
-#include <string>
-using namespace std;
-
+class Solution {
+public:
 string buildString(string s) {
     string result;
     for (char c : s) {
@@ -2106,10 +1825,11 @@ string buildString(string s) {
 bool backspaceCompare(string s, string t) {
     return buildString(s) == buildString(t);
 }
+};
 ```
 
 ---
-## 8. Implement strStr()
+##69 ****[Problem Link]https://leetcode.com/problems/implement-strstr**
 ### Approach
 Use the KMP algorithm for efficient substring search.
 
@@ -2118,16 +1838,16 @@ Use the KMP algorithm for efficient substring search.
 
 ### C++ Code
 ```cpp
-#include <vector>
-using namespace std;
-
+class Solution {
+public:
 int strStr(string haystack, string needle) {
     return haystack.find(needle);
 }
+};
 ```
 
 ---
-## 9. Contains Duplicate
+##70 ****[Problem Link]https://leetcode.com/problems/contains-duplicate**
 ### Approach
 Use an unordered set to check for duplicates.
 
@@ -2136,9 +1856,8 @@ Use an unordered set to check for duplicates.
 
 ### C++ Code
 ```cpp
-#include <unordered_set>
-using namespace std;
-
+class Solution {
+public:
 bool containsDuplicate(vector<int>& nums) {
     unordered_set<int> s;
     for (int num : nums) {
@@ -2147,10 +1866,11 @@ bool containsDuplicate(vector<int>& nums) {
     }
     return false;
 }
+};
 ```
 
 ---
-## 10. Jewels and Stones
+##71 ****[Problem Link]https://leetcode.com/problems/jewels-and-stones**
 ### Approach
 Use an unordered set for quick lookups.
 
@@ -2159,9 +1879,8 @@ Use an unordered set for quick lookups.
 
 ### C++ Code
 ```cpp
-#include <unordered_set>
-using namespace std;
-
+class Solution {
+public:
 int numJewelsInStones(string jewels, string stones) {
     unordered_set<char> jewelSet(jewels.begin(), jewels.end());
     int count = 0;
@@ -2170,10 +1889,10 @@ int numJewelsInStones(string jewels, string stones) {
     }
     return count;
 }
+};
 ```
-# Optimized C++ Solutions for LeetCode Problems
 
-## 1. Flood Fill
+##72 ****[Problem Link]https://leetcode.com/problems/flood-fill**
 **Approach:** Use DFS or BFS to traverse and fill connected pixels.
 **Time Complexity:** O(m * n)
 
@@ -2195,7 +1914,7 @@ public:
 };
 ```
 
-## 2. Two Sum IV - Input is a BST
+##73 ****[Problem Link]https://leetcode.com/problems/two-sum-iv-input-is-a-bst**
 **Approach:** Use inorder traversal with a hash set to check for sum.
 **Time Complexity:** O(n)
 
@@ -2215,7 +1934,7 @@ public:
 };
 ```
 
-## 3. Sqrt(x)
+##74 ****[Problem Link]https://leetcode.com/problems/sqrtx**
 **Approach:** Use binary search to find the square root.
 **Time Complexity:** O(log x)
 
@@ -2239,7 +1958,7 @@ public:
 };
 ```
 
-## 4. Isomorphic Strings
+##75 ****[Problem Link]https://leetcode.com/problems/isomorphic-strings**
 **Approach:** Use two maps to track character mappings.
 **Time Complexity:** O(n)
 
@@ -2259,7 +1978,7 @@ public:
 };
 ```
 
-## 5. Binary Search
+##76 ****[Problem Link]https://leetcode.com/problems/binary-search**
 **Approach:** Classic binary search.
 **Time Complexity:** O(log n)
 
@@ -2279,7 +1998,7 @@ public:
 };
 ```
 
-## 6. Repeated Substring Pattern
+##77 ****[Problem Link]https://leetcode.com/problems/repeated-substring-pattern**
 **Approach:** Check string concatenation without the first and last character.
 **Time Complexity:** O(n)
 
@@ -2293,7 +2012,7 @@ public:
 };
 ```
 
-## 7. Remove Element
+##78 ****[Problem Link]https://leetcode.com/problems/remove-element**
 **Approach:** Use two pointers.
 **Time Complexity:** O(n)
 
@@ -2310,7 +2029,7 @@ public:
 };
 ```
 
-## 8. Sum of Left Leaves
+##79 ****[Problem Link]https://leetcode.com/problems/sum-of-left-leaves**
 **Approach:** Use recursion to sum left leaves.
 **Time Complexity:** O(n)
 
@@ -2326,7 +2045,7 @@ public:
 };
 ```
 
-## 9. Hamming Distance
+##80 ****[Problem Link]https://leetcode.com/problems/hamming-distance**
 **Approach:** Use XOR and count bits.
 **Time Complexity:** O(log n)
 
@@ -2344,7 +2063,7 @@ public:
 };
 ```
 
-## 10. Valid Palindrome
+##81 ****[Problem Link]https://leetcode.com/problems/valid-palindrome**
 **Approach:** Two pointers, ignoring non-alphanumeric characters.
 **Time Complexity:** O(n)
 
@@ -2364,12 +2083,7 @@ public:
 };
 ```
 
----
-
-Each solution is optimized for time and space efficiency. Let me know if you need any modifications!
-# LeetCode Solutions in C++
-
-## 1. Add Strings ([Problem Link](https://leetcode.com/problems/add-strings))
+##82 ****[Problem Link]https://leetcode.com/problems/add-strings**
 
 ### Approach:
 - Use two pointers to traverse the strings from the end.
@@ -2397,7 +2111,7 @@ public:
 };
 ```
 
-## 2. Implement Queue using Stacks ([Problem Link](https://leetcode.com/problems/implement-queue-using-stacks))
+##83 ****[Problem Link]https://leetcode.com/problems/implement-queue-using-stacks**
 
 ### Approach:
 - Use two stacks: one for enqueue and one for dequeue.
@@ -2432,7 +2146,7 @@ public:
 };
 ```
 
-## 3. Roman to Integer ([Problem Link](https://leetcode.com/problems/roman-to-integer))
+##84 ****[Problem Link]https://leetcode.com/problems/roman-to-integer**
 
 ### Approach:
 - Use a hashmap to store values.
@@ -2456,7 +2170,7 @@ public:
 };
 ```
 
-## 4. Find the Town Judge ([Problem Link](https://leetcode.com/problems/find-the-town-judge))
+##85 ****[Problem Link]https://leetcode.com/problems/find-the-town-judge**
 
 ### Approach:
 - Use an array to track trust scores.
@@ -2481,7 +2195,7 @@ public:
 };
 ```
 
-## 5. Merge Sorted Array ([Problem Link](https://leetcode.com/problems/merge-sorted-array))
+##86 ****[Problem Link]https://leetcode.com/problems/merge-sorted-array**
 
 ### Approach:
 - Merge from the end to avoid extra space.
@@ -2500,7 +2214,7 @@ public:
 };
 ```
 
-## 6. Remove All Adjacent Duplicates in String ([Problem Link](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string))
+##87 ****[Problem Link]https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string**
 
 ### Approach:
 - Use a stack-based approach.
@@ -2523,7 +2237,7 @@ public:
 };
 ```
 
-## 7. Average of Levels in Binary Tree ([Problem Link](https://leetcode.com/problems/average-of-levels-in-binary-tree))
+##88 ****[Problem Link]https://leetcode.com/problems/average-of-levels-in-binary-tree**
 
 ### Approach:
 - Use BFS to compute level-wise sum.
@@ -2552,7 +2266,7 @@ public:
 };
 ```
 
-## 8. Find Pivot Index ([Problem Link](https://leetcode.com/problems/find-pivot-index))
+##89 ****[Problem Link]https://leetcode.com/problems/find-pivot-index**
 
 ### Approach:
 - Calculate prefix sums and compare.
@@ -2573,7 +2287,7 @@ public:
 };
 ```
 
-## 9. How Many Numbers Are Smaller Than the Current Number ([Problem Link](https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number))
+##90 ****[Problem Link]https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number**
 
 ### Time Complexity: O(N)
 
@@ -2591,7 +2305,7 @@ public:
 };
 ```
 
-## 10. Power of Two ([Problem Link](https://leetcode.com/problems/power-of-two))
+##91 ****[Problem Link]https://leetcode.com/problems/power-of-two**
 
 ### Time Complexity: O(1)
 
@@ -2602,9 +2316,9 @@ public:
         return n > 0 && (n & (n - 1)) == 0;
     }
 };
-```# Optimized C++ Solutions for LeetCode Problems
+```
 
-## 1. Fibonacci Number
+##92 ****[Problem Link]https://leetcode.com/problems/fibonacci-number**
 **Approach:** Use dynamic programming with memoization to achieve O(n) time complexity.
 
 **Time Complexity:** O(n)
@@ -2627,7 +2341,7 @@ public:
 
 ---
 
-## 2. Reverse Bits
+##93 ****[Problem Link]https://leetcode.com/problems/reverse-bits**
 **Approach:** Iterate over 32 bits, shift and set them in reverse order.
 
 **Time Complexity:** O(1)
@@ -2648,7 +2362,7 @@ public:
 
 ---
 
-## 3. Word Pattern
+##94 ****[Problem Link]https://leetcode.com/problems/word-pattern**
 **Approach:** Use two hash maps to maintain mappings between words and characters.
 
 **Time Complexity:** O(n)
@@ -2678,7 +2392,7 @@ public:
 
 ---
 
-## 4. Verifying an Alien Dictionary
+##95 ****[Problem Link]https://leetcode.com/problems/verifying-an-alien-dictionary**
 **Approach:** Use a map to store the order of characters and compare words accordingly.
 
 **Time Complexity:** O(n)
@@ -2703,7 +2417,7 @@ public:
 
 ---
 
-## 5. Cousins in Binary Tree
+##96 ****[Problem Link]https://leetcode.com/problems/cousins-in-binary-tree**
 **Approach:** Use BFS to find depth and parent of the given nodes.
 
 **Time Complexity:** O(n)
@@ -2734,7 +2448,7 @@ public:
 
 ---
 
-## 6. Count Binary Substrings
+##97 ****[Problem Link]https://leetcode.com/problems/count-binary-substrings**
 **Approach:** Use a single pass to count consecutive groups of 0s and 1s.
 
 **Time Complexity:** O(n)
@@ -2760,7 +2474,7 @@ public:
 
 ---
 
-## 7. Sort Array by Parity
+##98 ****[Problem Link]https://leetcode.com/problems/sort-array-by-parity**
 **Approach:** Use two-pointer technique.
 
 **Time Complexity:** O(n)
@@ -2782,7 +2496,7 @@ public:
 
 ---
 
-## 8. Number of 1 Bits
+##99 ****[Problem Link]https://leetcode.com/problems/number-of-1-bits**
 **Approach:** Use bitwise AND and shift operations.
 
 **Time Complexity:** O(1)
@@ -2803,7 +2517,7 @@ public:
 
 ---
 
-## 9. Maximum Product of Three Numbers
+##100 ****[Problem Link]https://leetcode.com/problems/maximum-product-of-three-numbers**
 **Approach:** Find the top three largest and two smallest numbers.
 
 **Time Complexity:** O(n)
@@ -2822,7 +2536,7 @@ public:
 
 ---
 
-## 10. Excel Sheet Column Title
+##101 ****[Problem Link]https://leetcode.com/problems/excel-sheet-column-title**
 **Approach:** Convert number to base-26 format with character mapping.
 
 **Time Complexity:** O(log n)
