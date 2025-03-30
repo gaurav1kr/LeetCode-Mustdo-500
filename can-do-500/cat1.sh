@@ -1,4 +1,4 @@
-for loop in `ls -1 | grep -v cat | sort -V`
+for loop in `ls -1 | grep -v cat | grep -v can | grep -v copy | sort -V`
 do
 cat $loop >> final.md
 done
