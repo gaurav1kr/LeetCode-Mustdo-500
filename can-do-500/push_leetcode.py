@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # ✅ Path to Markdown File
-MD_FILE_PATH = "/home/gakumar/LeetCode-Mustdo-500/can-do-500/final.md"
+MD_FILE_PATH = "/home/gakumar/LeetCode-Mustdo-500/can-do-500/can-do-500.md"
 
 # ✅ Cookie storage file
 COOKIE_FILE = "leetcode_cookies.pkl"
