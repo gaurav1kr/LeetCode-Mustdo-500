@@ -5537,3 +5537,3738 @@ public:
     }
 };
 ```
+
+
+##165 ****[Problem Link]https://leetcode.com/problems/h-index/****
+**Approach:** Sort the citations array in descending order and find the maximum index such that the number of citations is greater than or equal to the index.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int hIndex(vector<int>& citations) {
+        sort(citations.rbegin(), citations.rend());
+        int h = 0;
+        while (h < citations.size() && citations[h] > h) {
+            h++;
+        }
+        return h;
+    }
+};
+```
+
+
+---
+
+
+
+##166 ****[Problem Link]https://leetcode.com/problems/unique-number-of-occurrences/****
+**Approach:** Count the frequency of each element, then check if all frequencies are unique.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    bool uniqueOccurrences(vector<int>& arr) {
+        unordered_map<int, int> count;
+        for (int num : arr) count[num]++;
+        
+        unordered_set<int> uniqueCounts;
+        for (auto& entry : count) {
+            if (!uniqueCounts.insert(entry.second).second) return false;
+        }
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##167 ****[Problem Link]https://leetcode.com/problems/reverse-substrings-between-each-pair-of-parentheses/****
+**Approach:** Use a stack to reverse substrings between parentheses.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <stack>
+using namespace std;
+
+class Solution {
+public:
+    string reverseParentheses(string s) {
+        stack<string> stk;
+        string curr = "";
+        for (char c : s) {
+            if (c == '(') {
+                stk.push(curr);
+                curr = "";
+            } else if (c == ')') {
+                reverse(curr.begin(), curr.end());
+                curr = stk.top() + curr;
+                stk.pop();
+            } else {
+                curr += c;
+            }
+        }
+        return curr;
+    }
+};
+```
+
+
+---
+
+
+
+##168 ****[Problem Link]https://leetcode.com/problems/decoded-string-at-index/****
+**Approach:** Use a while loop to decode the string and find the character at the given index.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string decodeAtIndex(string s, int k) {
+        long long size = 0;
+        for (char c : s) {
+            if (isdigit(c)) size *= c - '0';
+            else size++;
+        }
+        
+        for (int i = s.size() - 1; i >= 0; --i) {
+            k %= size;
+            if (k == 0 && isalpha(s[i])) return string(1, s[i]);
+            if (isdigit(s[i])) size /= s[i] - '0';
+            else size--;
+        }
+        
+        return "";
+    }
+};
+```
+
+
+---
+
+
+
+##169 ****[Problem Link]https://leetcode.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/****
+**Approach:** Use dynamic programming to calculate the operations for each box efficiently.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> minOperations(string boxes) {
+        int n = boxes.size();
+        vector<int> result(n, 0);
+        int leftOps = 0, rightOps = 0, leftCount = 0, rightCount = 0;
+
+        for (int i = 0; i < n; ++i) {
+            result[i] += leftOps + rightOps;
+            if (boxes[i] == '1') leftCount++, rightCount++;
+            leftOps += leftCount;
+            rightOps += rightCount;
+        }
+
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##170 ****[Problem Link]https://leetcode.com/problems/partition-array-into-disjoint-intervals/****
+**Approach:** Use a greedy algorithm to find the partition by maintaining the maximum of the left and the minimum of the right intervals.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int partitionDisjoint(vector<int>& A) {
+        int n = A.size();
+        vector<int> leftMax(n), rightMin(n);
+        leftMax[0] = A[0];
+        rightMin[n-1] = A[n-1];
+        
+        for (int i = 1; i < n; ++i) {
+            leftMax[i] = max(leftMax[i-1], A[i]);
+        }
+        for (int i = n - 2; i >= 0; --i) {
+            rightMin[i] = min(rightMin[i+1], A[i]);
+        }
+        
+        for (int i = 0; i < n - 1; ++i) {
+            if (leftMax[i] <= rightMin[i+1]) return i + 1;
+        }
+        
+        return n;
+    }
+};
+```
+
+
+---
+
+
+
+##171 ****[Problem Link]https://leetcode.com/problems/shuffle-string/****
+**Approach:** Rearrange the characters in the string based on the index mapping provided.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string restoreString(string s, vector<int>& indices) {
+        string result(s.size(), ' ');
+        for (int i = 0; i < s.size(); ++i) {
+            result[indices[i]] = s[i];
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##172 ****[Problem Link]https://leetcode.com/problems/encode-and-decode-tinyurl/****
+**Approach:** Use a map to encode and decode URLs by generating unique keys.
+**Time Complexity:** O(1) for both encoding and decoding operations.
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Codec {
+public:
+    unordered_map<string, string> map;
+    int counter = 0;
+
+    string encode(string longUrl) {
+        string shortUrl = "http://tinyurl.com/" + to_string(counter++);
+        map[shortUrl] = longUrl;
+        return shortUrl;
+    }
+
+    string decode(string shortUrl) {
+        return map[shortUrl];
+    }
+};
+```
+
+
+---
+
+
+
+##173 ****[Problem Link]https://leetcode.com/problems/find-the-most-competitive-subsequence/****
+**Approach:** Use a stack to maintain the most competitive subsequence by popping out elements that are greater than the next element and can be replaced.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <stack>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> mostCompetitive(vector<int>& nums, int k) {
+        stack<int> stk;
+        int n = nums.size();
+        
+        for (int i = 0; i < n; ++i) {
+            while (stk.size() > 0 && stk.top() > nums[i] && stk.size() + (n - i) > k) {
+                stk.pop();
+            }
+            if (stk.size() < k) stk.push(nums[i]);
+        }
+        
+        vector<int> result(k);
+        for (int i = k - 1; i >= 0; --i) {
+            result[i] = stk.top();
+            stk.pop();
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##174 ****[Problem Link]https://leetcode.com/problems/minimum-time-visiting-all-points/****
+**Approach:** Use the Manhattan distance to calculate the time it takes to travel from one point to the next.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    int minTimeToVisitAllPoints(vector<vector<int>>& points) {
+        int time = 0;
+        for (int i = 1; i < points.size(); ++i) {
+            time += max(abs(points[i][0] - points[i - 1][0]), abs(points[i][1] - points[i - 1][1]));
+        }
+        return time;
+    }
+};
+```
+
+
+---
+
+
+
+##175 ****[Problem Link]https://leetcode.com/problems/iterator-for-combination/****
+**Approach:** Use a backtracking approach to generate combinations and an iterator to traverse them.
+**Time Complexity:** O(C(n, k))
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class CombinationIterator {
+public:
+    vector<string> combinations;
+    int idx = 0;
+
+    CombinationIterator(string characters, int combinationLength) {
+        generateCombinations(characters, combinationLength, 0, "");
+    }
+
+    void generateCombinations(string& chars, int length, int start, string comb) {
+        if (comb.size() == length) {
+            combinations.push_back(comb);
+            return;
+        }
+        for (int i = start; i < chars.size(); ++i) {
+            generateCombinations(chars, length, i + 1, comb + chars[i]);
+        }
+    }
+
+    string next() {
+        return combinations[idx++];
+    }
+
+    bool hasNext() {
+        return idx < combinations.size();
+    }
+};
+```
+
+
+---
+
+
+
+##176 ****[Problem Link]https://leetcode.com/problems/fair-candy-swap/****
+**Approach:** Calculate the difference in candy amounts and find the right swap.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {
+        int sumA = 0, sumB = 0;
+        for (int x : A) sumA += x;
+        for (int x : B) sumB += x;
+        int diff = (sumA - sumB) / 2;
+        unordered_set<int> setB(B.begin(), B.end());
+        
+        for (int x : A) {
+            if (setB.count(x - diff)) return {x, x - diff};
+        }
+        
+        return {};
+    }
+};
+```
+
+
+---
+
+
+
+##177 ****[Problem Link]https://leetcode.com/problems/design-hashset/****
+**Approach:** Use an array of buckets to implement a hash set efficiently.
+**Time Complexity:** O(1) for insert, remove, and contains.
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class MyHashSet {
+public:
+    vector<bool> set;
+    MyHashSet() : set(1000001, false) {}
+
+    void add(int key) {
+        set[key] = true;
+    }
+
+    void remove(int key) {
+        set[key] = false;
+    }
+
+    bool contains(int key) {
+        return set[key];
+    }
+};
+```
+
+
+---
+
+
+
+##178 ****[Problem Link]https://leetcode.com/problems/lemonade-change/****
+**Approach:** Track the counts of 5, 10, and 20 denominations and check if change can be provided.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int five = 0, ten = 0;
+        for (int bill : bills) {
+            if (bill == 5) five++;
+            else if (bill == 10) {
+                if (five == 0) return false;
+                five--;
+                ten++;
+            } else {
+                if (ten > 0 && five > 0) {
+                    ten--;
+                    five--;
+                } else if (five >= 3) {
+                    five -= 3;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##179 ****[Problem Link]https://leetcode.com/problems/global-and-local-inversions/****
+**Approach:** Compare the global and local inversion conditions by checking adjacent and non-adjacent elements.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    bool isIdealPermutation(vector<int>& A) {
+        int n = A.size();
+        for (int i = 0; i < n - 2; ++i) {
+            if (A[i] > A[i + 2]) return false;
+        }
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##180 ****[Problem Link]https://leetcode.com/problems/reduce-array-size-to-the-half/****
+**Approach:** Sort the frequencies of the elements and remove the most frequent elements.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minSetSize(vector<int>& arr) {
+        unordered_map<int, int> freq;
+        for (int num : arr) freq[num]++;
+        
+        vector<int> counts;
+        for (auto& entry : freq) counts.push_back(entry.second);
+        
+        sort(counts.rbegin(), counts.rend());
+        int total = 0, removed = 0, result = 0;
+        
+        for (int count : counts) {
+            total += count;
+            removed++;
+            if (total >= arr.size() / 2) break;
+        }
+        
+        return removed;
+    }
+};
+```
+
+
+---
+
+
+
+##181 ****[Problem Link]https://leetcode.com/problems/video-stitching/****
+**Approach:** Sort the intervals and use a greedy approach to cover all the time.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int videoStitching(vector<vector<int>>& clips, int T) {
+        sort(clips.begin(), clips.end());
+        int end = 0, farthest = 0, count = 0;
+        
+        for (const auto& clip : clips) {
+            if (clip[0] > end) {
+                if (clip[0] > farthest) return -1;
+                end = farthest;
+                count++;
+            }
+            farthest = max(farthest, clip[1]);
+            if (farthest >= T) return count + 1;
+        }
+        
+        return -1;
+    }
+};
+```
+
+
+---
+
+
+
+##182 ****[Problem Link]https://leetcode.com/problems/second-minimum-node-in-a-binary-tree/****
+**Approach:** Perform a BFS/DFS to track the second minimum node based on the root node value.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <climits>
+using namespace std;
+
+class Solution {
+public:
+    int findSecondMinimumValue(TreeNode* root) {
+        if (!root || !root->left) return -1;
+        if (root->left->val != root->right->val)
+            return root->left->val < root->right->val ? root->left->val : root->right->val;
+        
+        int left = findSecondMinimumValue(root->left);
+        int right = findSecondMinimumValue(root->right);
+        
+        if (left == -1) return right;
+        if (right == -1) return left;
+        
+        return min(left, right);
+    }
+};
+```
+
+
+---
+
+
+
+##183 ****[Problem Link]https://leetcode.com/problems/maximum-performance-of-a-team/****
+**Approach:** Sort engineers by efficiency and use a greedy approach with a priority queue to select the best team.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxPerformance(int n, vector<int>& speed, vector<int>& efficiency, int k) {
+        vector<pair<int, int>> engineers;
+        for (int i = 0; i < n; ++i) {
+            engineers.push_back({efficiency[i], speed[i]});
+        }
+        
+        sort(engineers.rbegin(), engineers.rend());
+        
+        priority_queue<int, vector<int>, greater<int>> pq;
+        long long totalSpeed = 0, result = 0;
+        
+        for (auto& eng : engineers) {
+            pq.push(eng.second);
+            totalSpeed += eng.second;
+            if (pq.size() > k) {
+                totalSpeed -= pq.top();
+                pq.pop();
+            }
+            result = max(result, totalSpeed * eng.first);
+        }
+        
+        return result % 1000000007;
+    }
+};
+```
+
+
+---
+
+
+
+##184 ****[Problem Link]https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/****
+**Approach:** Use a sliding window technique to find two non-overlapping subarrays that sum up to the target.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        int n = arr.size();
+        vector<int> dp(n + 1, n + 1);
+        dp[0] = 0;
+        int result = n + 1, sum = 0, left = 0;
+        
+        for (int right = 0; right < n; ++right) {
+            sum += arr[right];
+            while (sum > target) sum -= arr[left++];
+            if (sum == target) {
+                dp[right + 1] = min(dp[right + 1], right - left + 1);
+            }
+        }
+        
+        return result == n + 1 ? -1 : result;
+    }
+};
+```
+
+
+---
+
+
+
+##185 ****[Problem Link]https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/****
+**Approach:** Traverse the array from right to left and replace each element with the maximum element to its right.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> replaceElements(vector<int>& arr) {
+        int n = arr.size();
+        int maxRight = -1;
+        for (int i = n - 1; i >= 0; --i) {
+            int temp = arr[i];
+            arr[i] = maxRight;
+            maxRight = max(maxRight, temp);
+        }
+        return arr;
+    }
+};
+```
+
+
+---
+
+
+
+##186 ****[Problem Link]https://leetcode.com/problems/count-and-say/****
+**Approach:** Generate the sequence by counting the occurrences of each digit in the previous term.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string countAndSay(int n) {
+        string result = "1";
+        for (int i = 1; i < n; ++i) {
+            string temp = "";
+            for (int j = 0; j < result.size(); ++j) {
+                int count = 1;
+                while (j + 1 < result.size() && result[j] == result[j + 1]) {
+                    ++j;
+                    ++count;
+                }
+                temp += to_string(count) + result[j];
+            }
+            result = temp;
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##187 ****[Problem Link]https://leetcode.com/problems/design-underground-system/****
+**Approach:** Track travel times for each trip and calculate average travel times efficiently.
+**Time Complexity:** O(1) for each query
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+#include <utility>
+using namespace std;
+
+class UndergroundSystem {
+    unordered_map<int, pair<string, int>> checkInData;
+    unordered_map<string, pair<int, int>> travelTimes;
+    
+public:
+    UndergroundSystem() {}
+
+    void checkIn(int id, string stationName, int t) {
+        checkInData[id] = {stationName, t};
+    }
+
+    void checkOut(int id, string stationName, int t) {
+        auto checkIn = checkInData[id];
+        string route = checkIn.first + "-" + stationName;
+        travelTimes[route].first += t - checkIn.second;
+        travelTimes[route].second++;
+    }
+
+    double getAverageTime(string startStation, string endStation) {
+        string route = startStation + "-" + endStation;
+        return (double)travelTimes[route].first / travelTimes[route].second;
+    }
+};
+```
+
+
+---
+
+
+
+##188 ****[Problem Link]https://leetcode.com/problems/lexicographical-numbers/****
+**Approach:** Generate numbers in lexicographical order using depth-first search.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    void dfs(int curr, int n, vector<int>& result) {
+        if (curr > n) return;
+        result.push_back(curr);
+        for (int i = 0; i < 10; ++i) {
+            if (curr * 10 + i <= n) dfs(curr * 10 + i, n, result);
+        }
+    }
+    
+    vector<int> lexicalOrder(int n) {
+        vector<int> result;
+        for (int i = 1; i < 10; ++i) dfs(i, n, result);
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##189 ****[Problem Link]https://leetcode.com/problems/self-dividing-numbers/****
+**Approach:** Check if a number divides each of its digits without a remainder.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    bool isSelfDividing(int num) {
+        int original = num;
+        while (num > 0) {
+            int digit = num % 10;
+            if (digit == 0 || original % digit != 0) return false;
+            num /= 10;
+        }
+        return true;
+    }
+    
+    vector<int> selfDividingNumbers(int left, int right) {
+        vector<int> result;
+        for (int i = left; i <= right; ++i) {
+            if (isSelfDividing(i)) result.push_back(i);
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##190 ****[Problem Link]https://leetcode.com/problems/greatest-sum-divisible-by-three/****
+**Approach:** Use dynamic programming to track possible remainders modulo 3 and select the maximum sum divisible by 3.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxSumDivThree(vector<int>& nums) {
+        vector<int> dp(3, 0);
+        for (int num : nums) {
+            vector<int> newDp = dp;
+            for (int i = 0; i < 3; ++i) {
+                newDp[(i + num) % 3] = max(newDp[(i + num) % 3], dp[i] + num);
+            }
+            dp = newDp;
+        }
+        return dp[0];
+    }
+};
+```
+
+
+---
+
+
+
+##191 ****[Problem Link]https://leetcode.com/problems/patching-array/****
+**Approach:** Use a greedy approach to patch the array to reach the target sum.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minPatches(vector<int>& nums, int n) {
+        long long covered = 0;
+        int patches = 0, i = 0;
+        
+        while (covered < n) {
+            if (i < nums.size() && nums[i] <= covered + 1) {
+                covered += nums[i++];
+            } else {
+                covered += covered + 1;
+                patches++;
+            }
+        }
+        return patches;
+    }
+};
+```
+
+
+---
+
+
+
+##192 ****[Problem Link]https://leetcode.com/problems/cherry-pickup-ii/****
+**Approach:** Use dynamic programming to calculate the maximum number of cherries that can be collected from two robots.
+**Time Complexity:** O(m * n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int cherryPickup(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = 0; j < n; ++j) {
+                if (i == m - 1) dp[i][j] = grid[i][j];
+                else {
+                    int maxVal = dp[i + 1][j];
+                    if (j > 0) maxVal = max(maxVal, dp[i + 1][j - 1]);
+                    if (j < n - 1) maxVal = max(maxVal, dp[i + 1][j + 1]);
+                    dp[i][j] = grid[i][j] + maxVal;
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+};
+```
+
+
+---
+
+
+
+##193 ****[Problem Link]https://leetcode.com/problems/minimum-index-sum-of-two-lists/****
+**Approach:** Find the common restaurant with the minimum index sum from both lists.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    vector<string> findRestaurant(vector<string>& list1, vector<string>& list2) {
+        unordered_map<string, int> map;
+        for (int i = 0; i < list1.size(); ++i) map[list1[i]] = i;
+        
+        vector<string> result;
+        int minSum = INT_MAX;
+        
+        for (int i = 0; i < list2.size(); ++i) {
+            if (map.find(list2[i]) != map.end()) {
+                int sum = i + map[list2[i]];
+                if (sum < minSum) {
+                    result.clear();
+                    result.push_back(list2[i]);
+                    minSum = sum;
+                } else if (sum == minSum) {
+                    result.push_back(list2[i]);
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##194 ****[Problem Link]https://leetcode.com/problems/my-calendar-ii/****
+**Approach:** Track overlapping events using a map to store event counts and check for conflicts.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <map>
+using namespace std;
+
+class MyCalendarTwo {
+    map<int, int> events;
+    
+public:
+    MyCalendarTwo() {}
+    
+    bool book(int start, int end) {
+        events[start]++;
+        events[end]--;
+        
+        int active = 0;
+        for (auto& event : events) {
+            active += event.second;
+            if (active > 2) {
+                events[start]--;
+                events[end]++;
+                return false;
+            }
+        }
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##195 ****[Problem Link]https://leetcode.com/problems/largest-plus-sign/****
+**Approach:** Use dynamic programming to track the largest arm lengths of plus signs from all four directions.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {
+        vector<vector<int>> left(n, vector<int>(n, 0)), right(n, vector<int>(n, 0)),
+                            up(n, vector<int>(n, 0)), down(n, vector<int>(n, 0));
+        
+        for (auto& mine : mines) {
+            left[mine[0]][mine[1]] = right[mine[0]][mine[1]] = up[mine[0]][mine[1]] = down[mine[0]][mine[1]] = -1;
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i > 0 && left[i-1][j] != -1) left[i][j] = left[i-1][j] + 1;
+                if (j > 0 && up[i][j-1] != -1) up[i][j] = up[i][j-1] + 1;
+            }
+        }
+        
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (i < n - 1 && right[i+1][j] != -1) right[i][j] = right[i+1][j] + 1;
+                if (j < n - 1 && down[i][j+1] != -1) down[i][j] = down[i][j+1] + 1;
+            }
+        }
+        
+        int maxOrder = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                maxOrder = max(maxOrder, min({left[i][j], right[i][j], up[i][j], down[i][j]}));
+            }
+        }
+        
+        return maxOrder;
+    }
+};
+```
+
+
+---
+
+
+
+##196 ****[Problem Link]https://leetcode.com/problems/broken-calculator/****
+**Approach:** Use a greedy approach to minimize the number of operations by trying to reverse the problem (using division).
+**Time Complexity:** O(log n)
+
+```cpp
+
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int brokenCalc(int X, int Y) {
+        int steps = 0;
+        while (Y > X) {
+            if (Y % 2 == 0) Y /= 2;
+            else Y += 1;
+            steps++;
+        }
+        return steps + X - Y;
+    }
+};
+```
+
+
+---
+
+
+
+##197 ****[Problem Link]https://leetcode.com/problems/find-right-interval/****
+**Approach:** Sort intervals by start times and use binary search to find the right intervals.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findRightInterval(vector<vector<int>>& intervals) {
+        unordered_map<int, int> startIndices;
+        int n = intervals.size();
+        vector<int> result(n, -1);
+        
+        for (int i = 0; i < n; ++i) {
+            startIndices[intervals[i][0]] = i;
+        }
+        
+        sort(intervals.begin(), intervals.end());
+        
+        for (int i = 0; i < n; ++i) {
+            auto it = lower_bound(intervals.begin(), intervals.end(), vector<int>{intervals[i][1]});
+            if (it != intervals.end()) {
+                result[i] = startIndices[it->front()];
+            }
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##198 ****[Problem Link]https://leetcode.com/problems/compare-version-numbers/****
+**Approach:** Split version strings by '.' and compare each segment numerically.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int compareVersion(string version1, string version2) {
+        vector<int> v1, v2;
+        string temp = "";
+        for (char c : version1) {
+            if (c == '.') {
+                v1.push_back(stoi(temp));
+                temp = "";
+            } else {
+                temp += c;
+            }
+        }
+        if (!temp.empty()) v1.push_back(stoi(temp));
+        
+        temp = "";
+        for (char c : version2) {
+            if (c == '.') {
+                v2.push_back(stoi(temp));
+                temp = "";
+            } else {
+                temp += c;
+            }
+        }
+        if (!temp.empty()) v2.push_back(stoi(temp));
+        
+        int len = max(v1.size(), v2.size());
+        for (int i = 0; i < len; ++i) {
+            int num1 = (i < v1.size()) ? v1[i] : 0;
+            int num2 = (i < v2.size()) ? v2[i] : 0;
+            if (num1 > num2) return 1;
+            if (num1 < num2) return -1;
+        }
+        return 0;
+    }
+};
+```
+
+
+---
+
+
+
+##199 ****[Problem Link]https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/****
+**Approach:** Use dynamic programming to calculate the minimum difficulty of the job schedule.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minDifficulty(vector<int>& jobDifficulty, int d) {
+        int n = jobDifficulty.size();
+        if (n < d) return -1;
+        
+        vector<vector<int>> dp(d + 1, vector<int>(n + 1, INT_MAX));
+        dp[0][0] = 0;
+        
+        for (int i = 1; i <= d; ++i) {
+            for (int j = i; j <= n; ++j) {
+                int maxJob = 0;
+                for (int k = j - 1; k >= i - 1; --k) {
+                    maxJob = max(maxJob, jobDifficulty[k]);
+                    dp[i][j] = min(dp[i][j], dp[i - 1][k] + maxJob);
+                }
+            }
+        }
+        
+        return dp[d][n];
+    }
+};
+```
+
+
+---
+
+
+
+##200 ****[Problem Link]https://leetcode.com/problems/numbers-at-most-n-given-digit-set/****
+**Approach:** Generate all possible numbers from the digit set and count the numbers less than or equal to N.
+**Time Complexity:** O(d^k)
+
+```cpp
+
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int atMostNGivenDigitSet(vector<string>& D, int N) {
+        string s = to_string(N);
+        int m = s.size(), k = D.size();
+        vector<int> dp(m + 1, 0);
+        dp[m] = 1;
+        
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = 0; j < k; ++j) {
+                if (D[j][0] < s[i]) dp[i] += k;
+                if (D[j][0] == s[i]) dp[i] += dp[i + 1];
+            }
+        }
+        
+        return dp[0];
+    }
+};
+```
+
+
+---
+
+
+
+##201 ****[Problem Link]https://leetcode.com/problems/maximum-width-ramp/****
+**Approach:** Use a stack to track the indices of the minimum elements and find the maximum width.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <stack>
+using namespace std;
+
+class Solution {
+public:
+    int maxWidthRamp(vector<int>& A) {
+        stack<int> stk;
+        for (int i = 0; i < A.size(); ++i) {
+            if (stk.empty() || A[stk.top()] > A[i]) stk.push(i);
+        }
+        
+        int maxRamp = 0;
+        for (int i = A.size() - 1; i >= 0; --i) {
+            while (!stk.empty() && A[i] >= A[stk.top()]) {
+                maxRamp = max(maxRamp, i - stk.top());
+                stk.pop();
+            }
+        }
+        
+        return maxRamp;
+    }
+};
+```
+
+
+---
+
+
+
+##202 ****[Problem Link]https://leetcode.com/problems/number-of-valid-words-for-each-puzzle/****
+**Approach:** Use bitmasking to check if each word is valid with respect to the given puzzle.
+**Time Complexity:** O(n * m)
+
+```cpp
+
+#include <vector>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
+        unordered_set<int> wordSet;
+        for (const string& word : words) {
+            int mask = 0;
+            for (char c : word) {
+                mask |= 1 << (c - 'a');
+            }
+            wordSet.insert(mask);
+        }
+        
+        vector<int> result;
+        for (const string& puzzle : puzzles) {
+            int puzzleMask = 0;
+            for (char c : puzzle) puzzleMask |= 1 << (c - 'a');
+            
+            int count = 0;
+            for (int mask : wordSet) {
+                if ((mask & puzzleMask) == mask && (mask & (1 << (puzzle[0] - 'a')))) {
+                    count++;
+                }
+            }
+            result.push_back(count);
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##203 ****[Problem Link]https://leetcode.com/problems/find-numbers-with-even-number-of-digits/****
+**Approach:** Check the number of digits in each element and count those with even digits.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    int findNumbers(vector<int>& nums) {
+        int count = 0;
+        for (int num : nums) {
+            if (log10(num) + 1 % 2 == 0) count++;
+        }
+        return count;
+    }
+};
+```
+
+
+---
+
+
+
+##204 ****[Problem Link]https://leetcode.com/problems/grumpy-bookstore-owner/****
+**Approach:** Use a sliding window technique to calculate the maximum number of customers the bookstore owner can serve.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {
+        int n = customers.size();
+        int result = 0, extra = 0;
+        
+        for (int i = 0; i < X; ++i) {
+            if (grumpy[i] == 0) result += customers[i];
+            else extra += customers[i];
+        }
+        
+        int maxExtra = extra;
+        for (int i = X; i < n; ++i) {
+            if (grumpy[i] == 0) result += customers[i];
+            else extra += customers[i];
+            
+            if (grumpy[i - X] == 1) extra -= customers[i - X];
+            maxExtra = max(maxExtra, extra);
+        }
+        
+        return result + maxExtra;
+    }
+};
+```
+
+
+---
+
+
+
+##205 ****[Problem Link]https://leetcode.com/problems/sort-array-by-increasing-frequency/****
+**Approach:** Use a frequency map to count occurrences of elements and sort based on frequency.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> frequencySort(vector<int>& nums) {
+        unordered_map<int, int> freq;
+        for (int num : nums) freq[num]++;
+        
+        sort(nums.begin(), nums.end(), [&freq]int a, int b {
+            return freq[a] == freq[b] ? a < b : freq[a] < freq[b];
+        });
+        
+        return nums;
+    }
+};
+```
+
+
+---
+
+
+
+##206 ****[Problem Link]https://leetcode.com/problems/richest-customer-wealth/****
+**Approach:** Calculate the sum of wealth for each customer and return the maximum wealth.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maximumWealth(vector<vector<int>>& accounts) {
+        int maxWealth = 0;
+        for (auto& account : accounts) {
+            int sum = accumulate(account.begin(), account.end(), 0);
+            maxWealth = max(maxWealth, sum);
+        }
+        return maxWealth;
+    }
+};
+```
+
+
+---
+
+
+
+##207 ****[Problem Link]https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/****
+**Approach:** Use dynamic programming to calculate the number of valid binary representations.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int findIntegers(int n) {
+        vector<int> dp(32, 0);
+        dp[0] = dp[1] = 2;
+        
+        for (int i = 2; i < 32; ++i) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        
+        int result = 0, prevBit = 0;
+        for (int i = 31; i >= 0; --i) {
+            if ((n >> i) & 1) {
+                result += dp[i];
+                if (prevBit == 1) return result;
+                prevBit = 1;
+            } else {
+                prevBit = 0;
+            }
+        }
+        
+        return result + 1;
+    }
+};
+```
+
+
+---
+
+
+
+##208 ****[Problem Link]https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/****
+**Approach:** Find the depth of each node and return the lowest common ancestor of the deepest leaves.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        int depth = maxDepth(root);
+        return lcaHelper(root, depth);
+    }
+    
+    int maxDepth(TreeNode* root) {
+        if (!root) return 0;
+        return 1 + max(maxDepth(root->left), maxDepth(root->right));
+    }
+    
+    TreeNode* lcaHelper(TreeNode* root, int depth) {
+        if (!root) return nullptr;
+        if (depth == 1) return root;
+        TreeNode* left = lcaHelper(root->left, depth - 1);
+        TreeNode* right = lcaHelper(root->right, depth - 1);
+        if (left && right) return root;
+        return left ? left : right;
+    }
+};
+```
+
+
+---
+
+
+
+##209 ****[Problem Link]https://leetcode.com/problems/student-attendance-record-ii/****
+**Approach:** Use dynamic programming to count the number of valid attendance records.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int checkRecord(int n) {
+        int mod = 1000000007;
+        vector<vector<long long>> dp(n + 1, vector<long long>(3, 0));
+        dp[0][0] = 1;
+        
+        for (int i = 1; i <= n; ++i) {
+            dp[i][0] = (dp[i - 1][0] + dp[i - 1][1] + dp[i - 1][2]) % mod;
+            dp[i][1] = dp[i - 1][0];
+            dp[i][2] = dp[i - 1][1];
+        }
+        
+        return dp[n][0];
+    }
+};
+```
+
+
+---
+
+
+
+##210 ****[Problem Link]https://leetcode.com/problems/shortest-path-with-alternating-colors/****
+**Approach:** Use BFS to find the shortest path with alternating colors.
+**Time Complexity:** O(n + m)
+
+```cpp
+
+#include <vector>
+#include <queue>
+using namespace std;
+
+class Solution {
+public:
+    int shortestAlternatingPaths(int n, vector<vector<int>>& redEdges, vector<vector<int>>& blueEdges) {
+        vector<vector<int>> graphRed(n), graphBlue(n);
+        for (auto& edge : redEdges) graphRed[edge[0]].push_back(edge[1]);
+        for (auto& edge : blueEdges) graphBlue[edge[0]].push_back(edge[1]);
+        
+        vector<vector<int>> dist(n, vector<int>(2, -1));
+        queue<pair<int, int>> q;
+        dist[0][0] = dist[0][1] = 0;
+        q.push({0, 0});
+        q.push({0, 1});
+        
+        while (!q.empty()) {
+            auto [node, color] = q.front(); q.pop();
+            vector<int>& neighbors = (color == 0) ? graphRed[node] : graphBlue[node];
+            int nextColor = 1 - color;
+            
+            for (int neighbor : neighbors) {
+                if (dist[neighbor][nextColor] == -1) {
+                    dist[neighbor][nextColor] = dist[node][color] + 1;
+                    q.push({neighbor, nextColor});
+                }
+            }
+        }
+        
+        vector<int> result(n, -1);
+        for (int i = 0; i < n; ++i) {
+            if (dist[i][0] != -1 && dist[i][1] != -1) result[i] = min(dist[i][0], dist[i][1]);
+            else if (dist[i][0] != -1) result[i] = dist[i][0];
+            else if (dist[i][1] != -1) result[i] = dist[i][1];
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##211 ****[Problem Link]https://leetcode.com/problems/pancake-sorting/****
+**Approach:** Use a greedy approach to flip the largest unsorted element to its correct position.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> pancakeSort(vector<int>& A) {
+        vector<int> result;
+        int n = A.size();
+        
+        for (int i = n; i > 1; --i) {
+            int maxPos = max_element(A.begin(), A.begin() + i) - A.begin();
+            if (maxPos == i - 1) continue;
+            
+            if (maxPos > 0) {
+                reverse(A.begin(), A.begin() + maxPos + 1);
+                result.push_back(maxPos + 1);
+            }
+            reverse(A.begin(), A.begin() + i);
+            result.push_back(i);
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##212 ****[Problem Link]https://leetcode.com/problems/maximum-number-of-points-with-cost/****
+**Approach:** Use dynamic programming to track the maximum number of points with cost optimization.
+**Time Complexity:** O(n * m)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxPoints(vector<vector<int>>& points) {
+        int n = points.size(), m = points[0].size();
+        vector<vector<int>> dp(n, vector<int>(m, 0));
+        
+        for (int i = 0; i < m; ++i) dp[0][i] = points[0][i];
+        
+        for (int i = 1; i < n; ++i) {
+            vector<int> left(m, 0), right(m, 0);
+            left[0] = dp[i - 1][0];
+            for (int j = 1; j < m; ++j) left[j] = max(left[j - 1], dp[i - 1][j] - j);
+            
+            right[m - 1] = dp[i - 1][m - 1];
+            for (int j = m - 2; j >= 0; --j) right[j] = max(right[j + 1], dp[i - 1][j] + j);
+            
+            for (int j = 0; j < m; ++j) dp[i][j] = points[i][j] + max(left[j], right[j]);
+        }
+        
+        return *max_element(dp[n - 1].begin(), dp[n - 1].end());
+    }
+};
+```
+
+
+---
+
+
+
+##213 ****[Problem Link]https://leetcode.com/problems/unique-substrings-in-wraparound-string/****
+**Approach:** Use dynamic programming and track the maximum length of valid substrings.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    int findSubstringInWraproundString(string p) {
+        vector<int> dp(26, 0);
+        int maxLen = 0;
+        
+        for (int i = 0; i < p.size(); ++i) {
+            int index = p[i] - 'a';
+            if (i > 0 && (p[i] - p[i - 1] == 1 || p[i] == 'a' && p[i - 1] == 'z')) {
+                dp[index] = max(dp[index], dp[(p[i - 1] - 'a')] + 1);
+            } else {
+                dp[index] = max(dp[index], 1);
+            }
+        }
+        
+        return accumulate(dp.begin(), dp.end(), 0);
+    }
+};
+```
+
+
+---
+
+
+
+##214 ****[Problem Link]https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/****
+**Approach:** Track frequencies of characters and remove characters to ensure unique frequencies.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    int minDeletions(string s) {
+        unordered_map<char, int> freq;
+        for (char c : s) freq[c]++;
+        
+        unordered_set<int> seen;
+        int deletions = 0;
+        
+        for (auto& entry : freq) {
+            while (entry.second > 0 && seen.count(entry.second)) {
+                entry.second--;
+                deletions++;
+            }
+            seen.insert(entry.second);
+        }
+        
+        return deletions;
+    }
+};
+```
+
+
+---
+
+
+
+##215 ****[Problem Link]https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/****
+**Approach:** Count the frequencies of characters in both strings and compute the difference.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    int minSteps(string s, string t) {
+        unordered_map<char, int> freq;
+        for (char c : s) freq[c]++;
+        for (char c : t) freq[c]--;
+        
+        int steps = 0;
+        for (auto& entry : freq) {
+            steps += abs(entry.second);
+        }
+        return steps;
+    }
+};
+```
+
+
+---
+
+
+
+##216 ****[Problem Link]https://leetcode.com/problems/all-oone-data-structure/****
+**Approach:** Use a doubly linked list to maintain the order of frequency counts and support efficient insertions and deletions.
+**Time Complexity:** O(1)
+
+```cpp
+
+#include <unordered_map>
+#include <string>
+#include <list>
+using namespace std;
+
+class AllOne {
+    unordered_map<string, int> keyCount;
+    unordered_map<int, list<string>> freqList;
+    unordered_map<string, list<string>::iterator> keyIter;
+    
+public:
+    AllOne() {}
+
+    void inc(string key) {
+        int count = ++keyCount[key];
+        if (keyIter.count(key)) freqList[count - 1].erase(keyIter[key]);
+        freqList[count].push_back(key);
+        keyIter[key] = --freqList[count].end();
+    }
+
+    void dec(string key) {
+        int count = --keyCount[key];
+        freqList[count + 1].erase(keyIter[key]);
+        if (count == 0) keyCount.erase(key);
+        else freqList[count].push_back(key);
+        keyIter[key] = --freqList[count].end();
+    }
+
+    string getMaxKey() {
+        return !freqList.empty() ? *freqList.rbegin()->second.begin() : "";
+    }
+
+    string getMinKey() {
+        return !freqList.empty() ? *freqList.begin()->second.begin() : "";
+    }
+};
+```
+
+
+---
+
+
+
+##217 ****[Problem Link]https://leetcode.com/problems/detect-capital/****
+**Approach:** Check if all letters are uppercase, all lowercase, or if only the first letter is uppercase.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    bool detectCapitalUse(string word) {
+        int n = word.size();
+        bool allUpper = true, allLower = true, firstUpper = isupper(word[0]);
+        
+        for (int i = 1; i < n; ++i) {
+            if (isupper(word[i])) allLower = false;
+            if (islower(word[i])) allUpper = false;
+        }
+        
+        return allUpper || allLower || (firstUpper && allLower);
+    }
+};
+```
+
+
+---
+
+
+
+##218 ****[Problem Link]https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/****
+**Approach:** Use bitwise operations to track the even/odd count of vowels and apply a sliding window technique.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    int findTheLongestSubstring(string s) {
+        unordered_map<int, int> seen;
+        seen[0] = -1;
+        int mask = 0, result = 0;
+        
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == 'a') mask ^= 1;
+            if (s[i] == 'e') mask ^= 2;
+            if (s[i] == 'i') mask ^= 4;
+            if (s[i] == 'o') mask ^= 8;
+            if (s[i] == 'u') mask ^= 16;
+            
+            if (seen.count(mask)) result = max(result, i - seen[mask]);
+            else seen[mask] = i;
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##219 ****[Problem Link]https://leetcode.com/problems/transpose-matrix/****
+**Approach:** Switch rows and columns in the given matrix.
+**Time Complexity:** O(n * m)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> transpose(vector<vector<int>>& A) {
+        int m = A.size(), n = A[0].size();
+        vector<vector<int>> result(n, vector<int>(m));
+        
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                result[j][i] = A[i][j];
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##220 ****[Problem Link]https://leetcode.com/problems/partition-array-into-three-parts-with-equal-sum/****
+**Approach:** Check if the total sum is divisible by 3 and try to partition it into three parts with equal sum.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <numeric>
+using namespace std;
+
+class Solution {
+public:
+    bool canThreePartsEqualSum(vector<int>& A) {
+        int total = accumulate(A.begin(), A.end(), 0);
+        if (total % 3 != 0) return false;
+        
+        int target = total / 3;
+        int sum = 0, count = 0;
+        
+        for (int num : A) {
+            sum += num;
+            if (sum == target) {
+                sum = 0;
+                count++;
+            }
+        }
+        
+        return count >= 3;
+    }
+};
+```
+
+
+---
+
+
+
+##221 ****[Problem Link]https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/****
+**Approach:** Sort the array and check if each element can form a sequence of k consecutive numbers.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    bool isPossibleDivide(vector<int>& nums, int k) {
+        if (nums.size() % k != 0) return false;
+        
+        unordered_map<int, int> count;
+        for (int num : nums) count[num]++;
+        
+        sort(nums.begin(), nums.end());
+        
+        for (int num : nums) {
+            if (count[num] == 0) continue;
+            for (int i = 0; i < k; ++i) {
+                if (count[num + i] == 0) return false;
+                count[num + i]--;
+            }
+        }
+        
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##222 ****[Problem Link]https://leetcode.com/problems/smallest-range-ii/****
+**Approach:** Sort the array and adjust the smallest and largest values to minimize the range.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int smallestRangeII(vector<int>& A, int K) {
+        sort(A.begin(), A.end());
+        int n = A.size();
+        int result = A[n - 1] - A[0];
+        
+        for (int i = 0; i < n - 1; ++i) {
+            int maxVal = max(A[n - 1] - K, A[i] + K);
+            int minVal = min(A[0] + K, A[i + 1] - K);
+            result = min(result, maxVal - minVal);
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##223 ****[Problem Link]https://leetcode.com/problems/reach-a-number/****
+**Approach:** Use a greedy approach to minimize the distance with a series of steps, considering both positive and negative steps.
+**Time Complexity:** O(√n)
+
+```cpp
+
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    int reachNumber(int target) {
+        target = abs(target);
+        int steps = 0, sum = 0;
+        
+        while (sum < target || (sum - target) % 2 != 0) {
+            steps++;
+            sum += steps;
+        }
+        
+        return steps;
+    }
+};
+```
+
+
+---
+
+
+
+##224 ****[Problem Link]https://leetcode.com/problems/path-with-maximum-probability/****
+**Approach:** Use Dijkstra's algorithm with a priority queue to find the path with maximum probability.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start, int end) {
+        vector<vector<pair<int, double>>> graph(n);
+        for (int i = 0; i < edges.size(); ++i) {
+            graph[edges[i][0]].emplace_back(edges[i][1], succProb[i]);
+            graph[edges[i][1]].emplace_back(edges[i][0], succProb[i]);
+        }
+        
+        vector<double> prob(n, 0);
+        prob[start] = 1.0;
+        priority_queue<pair<double, int>> pq;
+        pq.push({1.0, start});
+        
+        while (!pq.empty()) {
+            auto [p, node] = pq.top();
+            pq.pop();
+            
+            if (node == end) return p;
+            
+            for (auto& [nextNode, probEdge] : graph[node]) {
+                double newProb = p * probEdge;
+                if (newProb > prob[nextNode]) {
+                    prob[nextNode] = newProb;
+                    pq.push({newProb, nextNode});
+                }
+            }
+        }
+        
+        return 0.0;
+    }
+};
+```
+
+
+---
+
+
+
+##225 ****[Problem Link]https://leetcode.com/problems/nim-game/****
+**Approach:** The game can be solved using the concept of nim-sum (XOR). If the XOR of the piles is 0, the second player wins; otherwise, the first player wins.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    bool canWinNim(int n) {
+        return n % 4 != 0;
+    }
+};
+```
+
+
+---
+
+
+
+##226 ****[Problem Link]https://leetcode.com/problems/max-chunks-to-make-sorted-ii/****
+**Approach:** Sort the array and compare the original and sorted arrays. Split the array wherever the elements do not match.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxChunksToSorted(vector<int>& arr) {
+        vector<int> sortedArr = arr;
+        sort(sortedArr.begin(), sortedArr.end());
+        
+        int chunks = 0, leftMax = INT_MIN, rightMin = INT_MAX;
+        for (int i = 0; i < arr.size(); ++i) {
+            leftMax = max(leftMax, arr[i]);
+            rightMin = min(rightMin, sortedArr[i]);
+            if (leftMax <= rightMin) chunks++;
+        }
+        
+        return chunks;
+    }
+};
+```
+
+
+---
+
+
+
+##227 ****[Problem Link]https://leetcode.com/problems/array-of-doubled-pairs/****
+**Approach:** Use a greedy approach to sort the array and check if each element can be paired with a double of another element.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    bool canReorderDoubled(vector<int>& A) {
+        unordered_map<int, int> count;
+        for (int num : A) count[num]++;
+        
+        sort(A.begin(), A.end(), [](int a, int b) { return abs(a) < abs(b); });
+        
+        for (int num : A) {
+            if (count[num] > 0) {
+                if (count[num * 2] <= 0) return false;
+                count[num]--;
+                count[num * 2]--;
+            }
+        }
+        
+        return true;
+    }
+};
+```
+
+
+---
+
+
+
+##228 ****[Problem Link]https://leetcode.com/problems/decode-ways-ii/****
+**Approach:** Use dynamic programming to count the number of ways to decode the string, considering the modulo constraint.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    int numDecodings(string s) {
+        const int mod = 1e9 + 7;
+        int n = s.size();
+        long long dp1 = s[0] == '0' ? 0 : 1, dp2 = 1;
+        
+        for (int i = 1; i < n; ++i) {
+            long long dp = 0;
+            if (s[i] != '0') dp += dp1;
+            if (s[i - 1] == '1' || (s[i - 1] == '2' && s[i] <= '6')) dp += dp2;
+            dp %= mod;
+            
+            dp2 = dp1;
+            dp1 = dp;
+        }
+        
+        return dp1;
+    }
+};
+```
+
+
+---
+
+
+
+##229 ****[Problem Link]https://leetcode.com/problems/add-to-array-form-of-integer/****
+**Approach:** Simulate the addition of the array and the integer while keeping track of the carry.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> addToArrayForm(vector<int>& A, int K) {
+        int n = A.size();
+        vector<int> result;
+        
+        while (K > 0 || n > 0) {
+            if (n > 0) K += A[--n];
+            result.push_back(K % 10);
+            K /= 10;
+        }
+        
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##230 ****[Problem Link]https://leetcode.com/problems/champagne-tower/****
+**Approach:** Simulate the champagne pouring process and calculate the amount of champagne in each glass.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    double champagneTower(int poured, int row, int col) {
+        vector<vector<double>> dp(row + 1, vector<double>(row + 1, 0));
+        dp[0][0] = poured;
+        
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j <= i; ++j) {
+                double overflow = (dp[i][j] - 1) / 2;
+                if (overflow > 0) {
+                    dp[i + 1][j] += overflow;
+                    dp[i + 1][j + 1] += overflow;
+                }
+            }
+        }
+        
+        return min(1.0, dp[row][col]);
+    }
+};
+```
+
+
+---
+
+
+
+##231 ****[Problem Link]https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/****
+**Approach:** Use dynamic programming to keep track of the longest subarray with a positive product.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int getMaxLen(vector<int>& nums) {
+        int n = nums.size();
+        int pos = 0, neg = 0, result = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] > 0) {
+                pos++;
+                neg = (neg == 0) ? 0 : neg + 1;
+            } else if (nums[i] < 0) {
+                int temp = pos;
+                pos = (neg == 0) ? 0 : neg + 1;
+                neg = temp + 1;
+            } else {
+                pos = neg = 0;
+            }
+            
+            result = max(result, pos);
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##232 ****[Problem Link]https://leetcode.com/problems/distinct-subsequences-ii/****
+**Approach:** Use dynamic programming with a hash map to count the number of distinct subsequences modulo a large prime.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    int distinctSubseqII(string S) {
+        const int mod = 1e9 + 7;
+        unordered_map<char, long long> dp;
+        long long result = 0;
+        
+        for (char c : S) {
+            dp[c] = (result + 1) % mod;
+            result = (result + dp[c]) % mod;
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##233 ****[Problem Link]https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/****
+**Approach:** Use the Floyd-Warshall algorithm to calculate all pair shortest distances and find the city with the smallest number of neighbors.
+**Time Complexity:** O(n^3)
+
+```cpp
+
+#include <vector>
+#include <climits>
+using namespace std;
+
+class Solution {
+public:
+    int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
+        vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+        for (int i = 0; i < n; ++i) dist[i][i] = 0;
+        
+        for (auto& edge : edges) {
+            dist[edge[0]][edge[1]] = dist[edge[1]][edge[0]] = edge[2];
+        }
+        
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+        
+        int result = -1, minCount = n;
+        for (int i = 0; i < n; ++i) {
+            int count = 0;
+            for (int j = 0; j < n; ++j) {
+                if (dist[i][j] <= distanceThreshold) count++;
+            }
+            if (count <= minCount) {
+                minCount = count;
+                result = i;
+            }
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##234 ****[Problem Link]https://leetcode.com/problems/maximum-area-of-a-piece-of-cake-after-horizontal-and-vertical-cuts/****
+**Approach:** Sort the cuts and calculate the maximum differences in horizontal and vertical directions.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxArea(int h, int w, vector<int>& horizontalCuts, vector<int>& verticalCuts) {
+        horizontalCuts.push_back(0);
+        horizontalCuts.push_back(h);
+        verticalCuts.push_back(0);
+        verticalCuts.push_back(w);
+        
+        sort(horizontalCuts.begin(), horizontalCuts.end());
+        sort(verticalCuts.begin(), verticalCuts.end());
+        
+        int maxH = 0, maxV = 0;
+        for (int i = 1; i < horizontalCuts.size(); ++i) {
+            maxH = max(maxH, horizontalCuts[i] - horizontalCuts[i - 1]);
+        }
+        
+        for (int i = 1; i < verticalCuts.size(); ++i) {
+            maxV = max(maxV, verticalCuts[i] - verticalCuts[i - 1]);
+        }
+        
+        return (long long)maxH * maxV % 1000000007;
+    }
+};
+```
+
+
+---
+
+
+
+##235 ****[Problem Link]https://leetcode.com/problems/subdomain-visit-count/****
+**Approach:** Use a hash map to store the counts of subdomains by splitting the domain at each '.' character.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<string> subdomainVisits(vector<string>& cpdomains) {
+        unordered_map<string, int> count;
+        for (string& domain : cpdomains) {
+            int spaceIndex = domain.find(' ');
+            int freq = stoi(domain.substr(0, spaceIndex));
+            string str = domain.substr(spaceIndex + 1);
+            
+            while (!str.empty()) {
+                count[str] += freq;
+                int dotIndex = str.find('.');
+                if (dotIndex == string::npos) break;
+                str = str.substr(dotIndex + 1);
+            }
+        }
+        
+        vector<string> result;
+        for (auto& entry : count) {
+            result.push_back(to_string(entry.second) + " " + entry.first);
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##236 ****[Problem Link]https://leetcode.com/problems/defanging-an-ip-address/****
+**Approach:** Replace all '.' in the IP address with '[.]'.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string defangIPaddr(string address) {
+        string result = "";
+        for (char c : address) {
+            if (c == '.') result += "[.]";
+            else result += c;
+        }
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##237 ****[Problem Link]https://leetcode.com/problems/design-browser-history/****
+**Approach:** Use a stack to store the visited URLs and another stack to manage forward navigation.
+**Time Complexity:** O(1) for each operation
+
+```cpp
+
+#include <string>
+#include <stack>
+using namespace std;
+
+class BrowserHistory {
+    stack<string> back, forward;
+    
+public:
+    BrowserHistory(string homepage) {
+        back.push(homepage);
+    }
+
+    void visit(string url) {
+        back.push(url);
+        while (!forward.empty()) forward.pop();
+    }
+
+    string back(int steps) {
+        while (steps-- > 0 && back.size() > 1) {
+            forward.push(back.top());
+            back.pop();
+        }
+        return back.top();
+    }
+
+    string forward(int steps) {
+        while (steps-- > 0 && !forward.empty()) {
+            back.push(forward.top());
+            forward.pop();
+        }
+        return back.top();
+    }
+};
+```
+
+
+---
+
+
+
+##238 ****[Problem Link]https://leetcode.com/problems/peeking-iterator/****
+**Approach:** Use a wrapper class to store the current element and implement the peek functionality.
+**Time Complexity:** O(1)
+
+```cpp
+
+#include <iterator>
+using namespace std;
+
+class PeekingIterator : public Iterator {
+    int current;
+    
+public:
+    PeekingIterator(const Iterator& iter) : Iterator(iter) {
+        if (Iterator::hasNext()) current = Iterator::next();
+    }
+
+    int peek() {
+        return current;
+    }
+
+    int next() {
+        int res = current;
+        if (Iterator::hasNext()) current = Iterator::next();
+        return res;
+    }
+
+    bool hasNext() const {
+        return Iterator::hasNext();
+    }
+};
+```
+
+
+---
+
+
+
+##239 ****[Problem Link]https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/****
+**Approach:** Use a sliding window approach to count unique characters in each substring.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <string>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    int uniqueLetterString(string s) {
+        int result = 0;
+        unordered_set<char> window;
+        
+        for (int i = 0; i < s.size(); ++i) {
+            window.clear();
+            for (int j = i; j < s.size(); ++j) {
+                window.insert(s[j]);
+                result += window.size();
+            }
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##240 ****[Problem Link]https://leetcode.com/problems/number-of-good-leaf-nodes-pairs/****
+**Approach:** Use DFS to find all pairs of good leaf nodes and count them.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        int result = 0;
+        unordered_map<int, int> counts;
+        
+        dfs(root, distance, counts, result);
+        return result;
+    }
+    
+    vector<int> dfs(TreeNode* node, int distance, unordered_map<int, int>& counts, int& result) {
+        if (!node) return vector<int>(distance + 1, 0);
+        
+        vector<int> left = dfs(node->left, distance, counts, result);
+        vector<int> right = dfs(node->right, distance, counts, result);
+        
+        for (int i = 1; i <= distance; ++i) {
+            for (int j = 1; j <= distance; ++j) {
+                if (i + j <= distance) result += left[i] * right[j];
+            }
+        }
+        
+        vector<int> res(distance + 1, 0);
+        for (int i = 1; i <= distance; ++i) res[i] = left[i - 1] + right[i - 1];
+        
+        return res;
+    }
+};
+```
+
+
+---
+
+
+
+##241 ****[Problem Link]https://leetcode.com/problems/find-the-shortest-superstring/****
+**Approach:** Use dynamic programming and graph algorithms to find the shortest superstring.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    string shortestSuperstring(vector<string>& words) {
+        int n = words.size();
+        vector<vector<int>> overlap(n, vector<int>(n, 0));
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i != j) {
+                    for (int len = 1; len <= min(words[i].size(), words[j].size()); ++len) {
+                        if (words[i].substr(words[i].size() - len) == words[j].substr(0, len)) {
+                            overlap[i][j] = len;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return "";
+    }
+};
+```
+
+
+---
+
+
+
+##242 ****[Problem Link]https://leetcode.com/problems/smallest-string-starting-from-leaf/****
+**Approach:** Use DFS to find the smallest string starting from leaf nodes.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string smallestFromLeaf(TreeNode* root) {
+        string result = "";
+        dfs(root, "", result);
+        return result;
+    }
+    
+    void dfs(TreeNode* node, string current, string& result) {
+        if (!node) return;
+        
+        current = char(node->val + 'a') + current;
+        
+        if (!node->left && !node->right) {
+            if (result.empty() || current < result) result = current;
+        }
+        
+        dfs(node->left, current, result);
+        dfs(node->right, current, result);
+    }
+};
+```
+
+
+---
+
+
+
+##243 ****[Problem Link]https://leetcode.com/problems/string-to-integer-atoi/****
+**Approach:** Use a simple state machine to process the string and convert it to an integer.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <climits>
+using namespace std;
+
+class Solution {
+public:
+    int myAtoi(string s) {
+        int i = 0, sign = 1, result = 0;
+        while (i < s.size() && s[i] == ' ') ++i;
+        
+        if (i < s.size() && (s[i] == '+' || s[i] == '-')) {
+            sign = s[i] == '+' ? 1 : -1;
+            ++i;
+        }
+        
+        while (i < s.size() && isdigit(s[i])) {
+            int digit = s[i] - '0';
+            if (result > (INT_MAX - digit) / 10) return sign == 1 ? INT_MAX : INT_MIN;
+            result = result * 10 + digit;
+            ++i;
+        }
+        
+        return result * sign;
+    }
+};
+```
+
+
+---
+
+
+
+##244 ****[Problem Link]https://leetcode.com/problems/smallest-integer-divisible-by-k/****
+**Approach:** Use BFS to find the smallest integer divisible by k.
+**Time Complexity:** O(k)
+
+```cpp
+
+#include <queue>
+#include <unordered_set>
+using namespace std;
+
+class Solution {
+public:
+    int smallestRepunitDivByK(int K) {
+        if (K % 2 == 0 || K % 5 == 0) return -1;
+        
+        queue<int> q;
+        unordered_set<int> visited;
+        q.push(1);
+        visited.insert(1);
+        
+        int steps = 1;
+        
+        while (!q.empty()) {
+            int num = q.front();
+            q.pop();
+            
+            if (num % K == 0) return steps;
+            
+            num = (num * 10 + 1) % K;
+            if (!visited.count(num)) {
+                q.push(num);
+                visited.insert(num);
+            }
+            
+            steps++;
+        }
+        
+        return -1;
+    }
+};
+```
+
+
+---
+
+
+
+##245 ****[Problem Link]https://leetcode.com/problems/find-in-mountain-array/****
+**Approach:** Use binary search to find the peak element first, then perform binary search on both sides.
+**Time Complexity:** O(log n)
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int findInMountainArray(int target, MountainArray &mountainArr) {
+        int n = mountainArr.length();
+        int left = 0, right = n - 1;
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (mountainArr.get(mid) < mountainArr.get(mid + 1)) left = mid + 1;
+            else right = mid;
+        }
+        
+        int peak = left;
+        left = 0, right = peak;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (mountainArr.get(mid) == target) return mid;
+            else if (mountainArr.get(mid) < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        
+        left = peak, right = n - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (mountainArr.get(mid) == target) return mid;
+            else if (mountainArr.get(mid) < target) right = mid - 1;
+            else left = mid + 1;
+        }
+        
+        return -1;
+    }
+};
+```
+
+
+---
+
+
+
+##246 ****[Problem Link]https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/****
+**Approach:** Use recursion to rebuild the tree from the given preorder traversal string.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    TreeNode* recoverFromPreorder(string S) {
+        int index = 0;
+        return recover(S, index, 0);
+    }
+    
+    TreeNode* recover(string& S, int& index, int level) {
+        if (index == S.size()) return nullptr;
+        
+        int count = 0;
+        while (index + count < S.size() && S[index + count] == '-') count++;
+        
+        if (count != level) return nullptr;
+        
+        int start = index + count;
+        while (index + count < S.size() && S[index + count] != '-') count++;
+        
+        TreeNode* node = new TreeNode(stoi(S.substr(start, count - start)));
+        index += count;
+        
+        node->left = recover(S, index, level + 1);
+        node->right = recover(S, index, level + 1);
+        
+        return node;
+    }
+};
+```
+
+
+---
+
+
+
+##247 ****[Problem Link]https://leetcode.com/problems/prefix-and-suffix-search/****
+**Approach:** Use a Trie to store prefixes and suffixes, and a hash map to quickly look up words.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+class WordFilter {
+    unordered_map<string, int> prefixSuffixMap;
+    
+public:
+    WordFilter(vector<string>& words) {
+        for (int i = 0; i < words.size(); ++i) {
+            for (int j = 0; j <= words[i].size(); ++j) {
+                for (int k = 0; k <= words[i].size(); ++k) {
+                    prefixSuffixMap[words[i].substr(0, j) + "-" + words[i].substr(words[i].size() - k)] = i;
+                }
+            }
+        }
+    }
+
+    int f(string prefix, string suffix) {
+        string key = prefix + "-" + suffix;
+        if (prefixSuffixMap.count(key)) return prefixSuffixMap[key];
+        return -1;
+    }
+};
+```
+
+
+---
+
+
+
+##248 ****[Problem Link]https://leetcode.com/problems/design-a-stack-with-increment-operation/****
+**Approach:** Use a stack and a lazy propagation technique to handle the increment operation efficiently.
+**Time Complexity:** O(1) for each operation
+
+```cpp
+
+#include <vector>
+using namespace std;
+
+class CustomStack {
+    vector<int> stack;
+    vector<int> increment;
+    
+public:
+    CustomStack(int maxSize) {
+        stack.resize(maxSize, 0);
+        increment.resize(maxSize, 0);
+    }
+
+    void push(int x) {
+        if (stack.size() < stack.capacity()) stack.push_back(x);
+    }
+
+    int pop() {
+        if (stack.empty()) return -1;
+        int idx = stack.size() - 1;
+        int val = stack[idx] + increment[idx];
+        if (idx > 0) increment[idx - 1] += increment[idx];
+        stack.pop_back();
+        return val;
+    }
+
+    void increment(int k, int val) {
+        if (k > stack.size()) k = stack.size();
+        increment[k - 1] += val;
+    }
+};
+```
+
+
+---
+
+
+
+##249 ****[Problem Link]https://leetcode.com/problems/jump-game-iv/****
+**Approach:** Use BFS to find the shortest path to reach the last index.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <queue>
+using namespace std;
+
+class Solution {
+public:
+    int minJumps(vector<int>& arr) {
+        int n = arr.size();
+        if (n == 1) return 0;
+        
+        unordered_map<int, vector<int>> graph;
+        for (int i = 0; i < n; ++i) {
+            graph[arr[i]].push_back(i);
+        }
+        
+        queue<int> q;
+        vector<bool> visited(n, false);
+        q.push(0);
+        visited[0] = true;
+        
+        int jumps = 0;
+        
+        while (!q.empty()) {
+            int size = q.size();
+            while (size--) {
+                int idx = q.front();
+                q.pop();
+                
+                if (idx == n - 1) return jumps;
+                
+                if (idx - 1 >= 0 && !visited[idx - 1]) {
+                    visited[idx - 1] = true;
+                    q.push(idx - 1);
+                }
+                if (idx + 1 < n && !visited[idx + 1]) {
+                    visited[idx + 1] = true;
+                    q.push(idx + 1);
+                }
+                
+                for (int i : graph[arr[idx]]) {
+                    if (!visited[i]) {
+                        visited[i] = true;
+                        q.push(i);
+                    }
+                }
+                graph[arr[idx]].clear();
+            }
+            jumps++;
+        }
+        
+        return -1;
+    }
+};
+```
+
+
+---
+
+
+
+##250 ****[Problem Link]https://leetcode.com/problems/minimum-increment-to-make-array-unique/****
+**Approach:** Sort the array and greedily increment duplicates.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minIncrementForUnique(vector<int>& A) {
+        sort(A.begin(), A.end());
+        int result = 0, prev = -1;
+        
+        for (int num : A) {
+            if (num <= prev) {
+                result += prev - num + 1;
+                prev++;
+            } else {
+                prev = num;
+            }
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##251 ****[Problem Link]https://leetcode.com/problems/minimum-cost-to-cut-a-stick/****
+**Approach:** Use dynamic programming to find the minimum cost to cut the stick.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minCost(int n, vector<int>& cuts) {
+        cuts.push_back(0);
+        cuts.push_back(n);
+        sort(cuts.begin(), cuts.end());
+        
+        int m = cuts.size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        
+        for (int len = 2; len < m; ++len) {
+            for (int i = 0; i + len < m; ++i) {
+                int j = i + len;
+                dp[i][j] = INT_MAX;
+                for (int k = i + 1; k < j; ++k) {
+                    dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j] + cuts[j] - cuts[i]);
+                }
+            }
+        }
+        
+        return dp[0][m - 1];
+    }
+};
+```
+
+
+---
+
+
+
+##252 ****[Problem Link]https://leetcode.com/problems/implement-magic-dictionary/****
+**Approach:** Use a trie to store words and implement a search with one modification.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <unordered_set>
+using namespace std;
+
+class MagicDictionary {
+    unordered_set<string> words;
+    
+public:
+    MagicDictionary() {}
+
+    void buildDict(vector<string> dict) {
+        for (string word : dict) words.insert(word);
+    }
+
+    bool search(string searchWord) {
+        for (int i = 0; i < searchWord.size(); ++i) {
+            char original = searchWord[i];
+            for (char c = 'a'; c <= 'z'; ++c) {
+                if (c != original) {
+                    searchWord[i] = c;
+                    if (words.count(searchWord)) return true;
+                }
+            }
+            searchWord[i] = original;
+        }
+        return false;
+    }
+};
+```
+
+
+---
+
+
+
+##253 ****[Problem Link]https://leetcode.com/problems/minimum-difference-between-largest-and-smallest-value-in-three-moves/****
+**Approach:** Sort the array and calculate the difference between the largest and smallest values after three moves.
+**Time Complexity:** O(n log n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) return 0;
+        
+        sort(nums.begin(), nums.end());
+        
+        int result = INT_MAX;
+        for (int i = 0; i < 4; ++i) {
+            result = min(result, nums[nums.size() - 4 + i] - nums[i]);
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##254 ****[Problem Link]https://leetcode.com/problems/score-after-flipping-matrix/****
+**Approach:** Maximize the score by flipping the rows and columns to get the maximum number of 1's.
+**Time Complexity:** O(n * m)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int matrixScore(vector<vector<int>>& A) {
+        int m = A.size(), n = A[0].size();
+        for (int i = 0; i < m; ++i) {
+            if (A[i][0] == 0) {
+                for (int j = 0; j < n; ++j) A[i][j] ^= 1;
+            }
+        }
+        
+        int score = 0;
+        for (int j = 0; j < n; ++j) {
+            int count = 0;
+            for (int i = 0; i < m; ++i) count += A[i][j];
+            score += max(count, m - count) * (1 << (n - j - 1));
+        }
+        
+        return score;
+    }
+};
+```
+
+
+---
+
+
+
+##255 ****[Problem Link]https://leetcode.com/problems/shopping-offers/****
+**Approach:** Use dynamic programming to find the minimum cost by considering all possible combinations of offers.
+**Time Complexity:** O(n * m * k)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        return helper(price, special, needs);
+    }
+    
+    int helper(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        int res = 0;
+        for (int i = 0; i < needs.size(); i++) {
+            res += needs[i] * price[i];
+        }
+        
+        for (auto& offer : special) {
+            vector<int> newNeeds = needs;
+            bool valid = true;
+            for (int i = 0; i < newNeeds.size(); i++) {
+                if (newNeeds[i] < offer[i]) {
+                    valid = false;
+                    break;
+                }
+                newNeeds[i] -= offer[i];
+            }
+            if (valid) {
+                res = min(res, offer.back() + helper(price, special, newNeeds));
+            }
+        }
+        
+        return res;
+    }
+};
+```
+
+
+---
+
+
+
+##256 ****[Problem Link]https://leetcode.com/problems/minimum-value-to-get-positive-step-by-step-sum/****
+**Approach:** Iterate over the array and find the minimum value required to make the sum positive step by step.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minStartValue(vector<int>& nums) {
+        int minVal = 0, sum = 0;
+        for (int num : nums) {
+            sum += num;
+            minVal = min(minVal, sum);
+        }
+        return 1 - minVal;
+    }
+};
+```
+
+
+---
+
+
+
+##257 ****[Problem Link]https://leetcode.com/problems/min-cost-to-connect-all-points/****
+**Approach:** Use Prim's algorithm to find the minimum cost of connecting all points.
+**Time Complexity:** O(n^2)
+
+```cpp
+
+#include <vector>
+#include <queue>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        vector<bool> visited(n, false);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        
+        int result = 0;
+        
+        while (!pq.empty()) {
+            auto [cost, node] = pq.top(); pq.pop();
+            if (visited[node]) continue;
+            visited[node] = true;
+            result += cost;
+            
+            for (int i = 0; i < n; ++i) {
+                if (!visited[i]) {
+                    int dist = abs(points[node][0] - points[i][0]) + abs(points[node][1] - points[i][1]);
+                    pq.push({dist, i});
+                }
+            }
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##258 ****[Problem Link]https://leetcode.com/problems/magnetic-force-between-two-balls/****
+**Approach:** Use binary search to find the maximum magnetic force between two balls.
+**Time Complexity:** O(n log m)
+
+```cpp
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxDistance(vector<int>& position, int m) {
+        sort(position.begin(), position.end());
+        
+        int left = 1, right = position.back() - position.front(), result = 0;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (canPlace(position, m, mid)) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return result;
+    }
+    
+    bool canPlace(vector<int>& position, int m, int minDist) {
+        int count = 1, lastPos = position[0];
+        
+        for (int i = 1; i < position.size(); ++i) {
+            if (position[i] - lastPos >= minDist) {
+                count++;
+                lastPos = position[i];
+            }
+        }
+        
+        return count >= m;
+    }
+};
+```
+
+
+---
+
+
+
+##259 ****[Problem Link]https://leetcode.com/problems/baseball-game/****
+**Approach:** Use a stack to track the scores and process the operations as described.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <vector>
+#include <string>
+#include <stack>
+using namespace std;
+
+class Solution {
+public:
+    int calPoints(vector<string>& ops) {
+        stack<int> stack;
+        
+        for (string& op : ops) {
+            if (op == "+") {
+                int top = stack.top(); stack.pop();
+                int newTop = top + stack.top();
+                stack.push(top);
+                stack.push(newTop);
+            } else if (op == "D") {
+                stack.push(stack.top() * 2);
+            } else if (op == "C") {
+                stack.pop();
+            } else {
+                stack.push(stoi(op));
+            }
+        }
+        
+        int result = 0;
+        while (!stack.empty()) {
+            result += stack.top();
+            stack.pop();
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##260 ****[Problem Link]https://leetcode.com/problems/nth-magical-number/****
+**Approach:** Use binary search to find the nth magical number based on the given multiples.
+**Time Complexity:** O(log n)
+
+```cpp
+
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int nthMagicalNumber(int N, int A, int B) {
+        const int mod = 1e9 + 7;
+        int lcm = A * B / gcd(A, B);
+        
+        long long left = min(A, B), right = (long long)N * min(A, B);
+        
+        while (left < right) {
+            long long mid = left + (right - left) / 2;
+            if (mid / A + mid / B - mid / lcm >= N) right = mid;
+            else left = mid + 1;
+        }
+        
+        return (int)(left % mod);
+    }
+};
+```
+
+
+---
+
+
+
+##261 ****[Problem Link]https://leetcode.com/problems/to-lower-case/****
+**Approach:** Convert all uppercase characters to lowercase.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    string toLowerCase(string str) {
+        for (char& c : str) {
+            if (isupper(c)) c = tolower(c);
+        }
+        return str;
+    }
+};
+```
+
+
+---
+
+
+
+##262 ****[Problem Link]https://leetcode.com/problems/maximum-number-of-balloons/****
+**Approach:** Count the frequency of characters in the word 'balloon' and calculate how many times the word can be formed.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    int maxNumberOfBalloons(string text) {
+        unordered_map<char, int> count;
+        for (char c : text) count[c]++;
+        
+        count['b'] = min(count['b'], min(count['a'], min(count['l'] / 2, min(count['o'] / 2, count['n']))));
+        
+        return count['b'];
+    }
+};
+```
+
+
+---
+
+
+
+##263 ****[Problem Link]https://leetcode.com/problems/consecutive-numbers-sum/****
+**Approach:** Use the formula for sum of an arithmetic progression and check if the equation has integer solutions.
+**Time Complexity:** O(sqrt(n))
+
+```cpp
+
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    int consecutiveNumbersSum(int N) {
+        int result = 0;
+        
+        for (int k = 1; k * (k + 1) / 2 <= N; ++k) {
+            if ((N - k * (k + 1) / 2) % k == 0) result++;
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
+##264 ****[Problem Link]https://leetcode.com/problems/longest-absolute-file-path/****
+**Approach:** Use a stack to manage the directories and calculate the longest absolute path by handling the levels of directories.
+**Time Complexity:** O(n)
+
+```cpp
+
+#include <string>
+#include <stack>
+using namespace std;
+
+class Solution {
+public:
+    int lengthLongestPath(string input) {
+        stack<int> stack;
+        int result = 0;
+        int length = 0;
+        
+        for (int i = 0; i < input.size(); ++i) {
+            int level = 0;
+            while (i < input.size() && input[i] == '	') {
+                i++;
+                level++;
+            }
+            
+            while (stack.size() > level) stack.pop();
+            
+            int start = i;
+            while (i < input.size() && input[i] != '
+') i++;
+            length = i - start;
+            
+            if (input.substr(start, length).find('.') != string::npos) {
+                result = max(result, length + (stack.empty() ? 0 : stack.top()) + level);
+            }
+            stack.push(length + (stack.empty() ? 0 : stack.top()));
+        }
+        
+        return result;
+    }
+};
+```
+
+
+---
+
+
+
