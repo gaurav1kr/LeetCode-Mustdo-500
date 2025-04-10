@@ -13880,3 +13880,866 @@ public:
 ```
 
 ---
+
+
+
+##1 ****[Problem Link]https://leetcode.com/problems/delivering-boxes-from-storage-to-ports****  
+**Approach:** Use dynamic programming with a monotonic deque. Track the minimum number of trips required for a prefix of boxes using constraints on weight and port changes.  
+**Time Complexity:** O(n)
+
+```cpp
+#include <vector>
+#include <deque>
+using namespace std;
+
+class Solution {
+public:
+    int boxDelivering(vector<vector<int>>& boxes, int portsCount, int maxBoxes, int maxWeight) {
+        int n = boxes.size();
+        vector<int> p(n + 1), w(n + 1), neg(n + 1), W(n + 1);
+        for (int i = 0; i < n; ++i) {
+            p[i + 1] = boxes[i][0];
+            w[i + 1] = boxes[i][1];
+            neg[i + 1] = neg[i] + (i > 0 && boxes[i][0] != boxes[i - 1][0]);
+            W[i + 1] = W[i] + boxes[i][1];
+        }
+
+        deque<int> dq;
+        vector<int> f(n + 1, 1e9);
+        f[0] = 0;
+        dq.push_back(0);
+
+        for (int i = 1; i <= n; ++i) {
+            while (i - dq.front() > maxBoxes || W[i] - W[dq.front()] > maxWeight) dq.pop_front();
+            f[i] = f[dq.front()] + neg[i] - neg[dq.front()] + 2;
+            while (!dq.empty() && f[dq.back()] >= f[i]) dq.pop_back();
+            dq.push_back(i);
+        }
+
+        return f[n];
+    }
+};
+```
+
+---
+
+##2 ****[Problem Link]https://leetcode.com/problems/minimum-space-wasted-from-packaging****  
+**Approach:** Try each supplier's boxes and use binary search to greedily pack the packages. Minimize the unused space.  
+**Time Complexity:** O(m * n log n)
+
+```cpp
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+using namespace std;
+
+class Solution {
+public:
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        sort(packages.begin(), packages.end());
+        long long res = LLONG_MAX, mod = 1e9 + 7, total = accumulate(packages.begin(), packages.end(), 0LL);
+        for (auto& b : boxes) {
+            sort(b.begin(), b.end());
+            if (b.back() < packages.back()) continue;
+            long long cur = 0, i = 0;
+            for (int box : b) {
+                int j = upper_bound(packages.begin() + i, packages.end(), box) - packages.begin();
+                cur += 1LL * (j - i) * box;
+                i = j;
+            }
+            res = min(res, cur);
+        }
+        return res == LLONG_MAX ? -1 : (res - total) % mod;
+    }
+};
+```
+
+---
+
+##3 ****[Problem Link]https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list****  
+**Approach:** Compare each list with all others using set comparison. Skip subsets.  
+**Time Complexity:** O(n^2 * m)
+
+```cpp
+#include <vector>
+#include <string>
+#include <unordered_set>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> peopleIndexes(vector<vector<string>>& favoriteCompanies) {
+        int n = favoriteCompanies.size();
+        vector<unordered_set<string>> sets(n);
+        for (int i = 0; i < n; ++i)
+            for (auto& s : favoriteCompanies[i])
+                sets[i].insert(s);
+
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            bool isSubset = false;
+            for (int j = 0; j < n && !isSubset; ++j) {
+                if (i == j || sets[j].size() < sets[i].size()) continue;
+                isSubset = all_of(sets[i].begin(), sets[i].end(), [&]const string& s {
+                    return sets[j].count(s);
+                });
+            }
+            if (!isSubset) res.push_back(i);
+        }
+        return res;
+    }
+};
+```
+
+---
+
+##4 ****[Problem Link]https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array****  
+**Approach:** Use prefix sums and hash maps to track valid partitions. Simulate each change and update max partition count.  
+**Time Complexity:** O(n)
+
+```cpp
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    int waysToPartition(vector<int>& nums, int k) {
+        int n = nums.size();
+        long long total = 0;
+        for (int x : nums) total += x;
+
+        vector<long long> prefix(n);
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; ++i)
+            prefix[i] = prefix[i - 1] + nums[i];
+
+        unordered_map<long long, int> left, right;
+        for (int i = 0; i < n - 1; ++i)
+            right[prefix[i]]++;
+
+        int res = right[total / 2 * 2 == total ? total / 2 : LLONG_MIN];
+
+        for (int i = 0; i < n; ++i) {
+            long long delta = k - nums[i];
+            int cnt = 0;
+            if ((total + delta) % 2 == 0) {
+                long long target = (total + delta) / 2;
+                cnt = left[target] + right[target - delta];
+            }
+            res = max(res, cnt);
+            if (i < n - 1) {
+                right[prefix[i]]--;
+                left[prefix[i]]++;
+            }
+        }
+
+        return res;
+    }
+};
+```
+
+---
+
+##5 ****[Problem Link]https://leetcode.com/problems/maximum-building-height****  
+**Approach:** Sort restrictions and limit max height based on distance and previous limits. Forward and backward pass to refine.  
+**Time Complexity:** O(n log n)
+
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        restrictions.push_back({1, 0});
+        sort(restrictions.begin(), restrictions.end());
+        int m = restrictions.size();
+        restrictions.push_back({n, n - 1});
+
+        for (int i = m - 1; i > 0; --i) {
+            int d = restrictions[i + 1][0] - restrictions[i][0];
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + d);
+        }
+
+        for (int i = 1; i <= m; ++i) {
+            int d = restrictions[i][0] - restrictions[i - 1][0];
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + d);
+        }
+
+        int ans = 0;
+        for (int i = 1; i < restrictions.size(); ++i) {
+            int l = restrictions[i - 1][0], r = restrictions[i][0];
+            int hl = restrictions[i - 1][1], hr = restrictions[i][1];
+            int d = r - l;
+            ans = max(ans, (hl + hr + d) / 2);
+        }
+        return ans;
+    }
+};
+```
+
+---
+
+##6 ****[Problem Link]https://leetcode.com/problems/delivering-boxes-from-storage-to-ports****
+**Approach:** Dynamic programming with prefix sums to optimize box delivery with constraints.
+**Time Complexity:** O(n * k), where `n` is number of boxes and `k` is maxBoxes.
+
+```cpp
+class Solution {
+public:
+    int boxDelivering(vector<vector<int>>& boxes, int portsCount, int maxBoxes, int maxWeight) {
+        int n = boxes.size();
+        vector<int> dp(n + 1, 1e9);
+        dp[0] = 0;
+        deque<int> dq;
+        dq.push_back(0);
+
+        int weight = 0, trips = 0, j = 0;
+        for (int i = 0; i < n; ++i) {
+            while (j < n && j - i < maxBoxes && weight + boxes[j][1] <= maxWeight) {
+                weight += boxes[j][1];
+                if (j == i || boxes[j][0] != boxes[j - 1][0])
+                    ++trips;
+                ++j;
+            }
+            dp[j] = min(dp[j], dp[i] + trips + 1);
+            weight -= boxes[i][1];
+            if (i + 1 < n && boxes[i][0] != boxes[i + 1][0])
+                --trips;
+        }
+        return dp[n];
+    }
+};
+```
+
+---
+
+##7 ****[Problem Link]https://leetcode.com/problems/minimum-space-wasted-from-packaging****
+**Approach:** Sort packages and for each supplier, use binary search to compute fitting.
+**Time Complexity:** O(k * n log n), k = suppliers, n = packages.
+
+```cpp
+class Solution {
+public:
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        sort(packages.begin(), packages.end());
+        long res = LONG_MAX, mod = 1e9 + 7;
+        long total = accumulate(packages.begin(), packages.end(), 0L);
+
+        for (auto& b : boxes) {
+            sort(b.begin(), b.end());
+            if (b.back() < packages.back()) continue;
+            long t = 0, i = 0;
+            for (int j = 0; j < b.size(); ++j) {
+                auto it = upper_bound(packages.begin() + i, packages.end(), b[j]);
+                t += (it - packages.begin() - i) * (long)b[j];
+                i = it - packages.begin();
+            }
+            res = min(res, t);
+        }
+        return res == LONG_MAX ? -1 : res % mod;
+    }
+};
+```
+
+---
+
+##8 ****[Problem Link]https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list****
+**Approach:** Compare each list to others by set inclusion.
+**Time Complexity:** O(n^2 * k)
+
+```cpp
+class Solution {
+public:
+    vector<int> peopleIndexes(vector<vector<string>>& favoriteCompanies) {
+        int n = favoriteCompanies.size();
+        vector<set<string>> favSets(n);
+        for (int i = 0; i < n; ++i)
+            favSets[i] = set<string>(favoriteCompanies[i].begin(), favoriteCompanies[i].end());
+
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            bool isSubset = false;
+            for (int j = 0; j < n; ++j) {
+                if (i != j && includes(favSets[j].begin(), favSets[j].end(), favSets[i].begin(), favSets[i].end())) {
+                    isSubset = true;
+                    break;
+                }
+            }
+            if (!isSubset) res.push_back(i);
+        }
+        return res;
+    }
+};
+```
+
+---
+
+##9 ****[Problem Link]https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array****
+**Approach:** Prefix sums + hashing to count valid partitions with potential replacements.
+**Time Complexity:** O(n)
+
+```cpp
+class Solution {
+public:
+    int waysToPartition(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<long, int> prefix, suffix;
+        long total = accumulate(nums.begin(), nums.end(), 0L), sum = 0;
+        int res = 0;
+
+        for (int i = 0; i < n - 1; ++i) {
+            sum += nums[i];
+            ++prefix[sum];
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 1; --i) {
+            sum += nums[i];
+            ++suffix[sum];
+        }
+        res = prefix[total / 2] * (total % 2 == 0);
+
+        sum = 0;
+        for (int i = 0; i < n; ++i) {
+            long diff = k - nums[i];
+            long newTotal = total + diff;
+            if (newTotal % 2 != 0) continue;
+            long target = newTotal / 2;
+            res = max(res, prefix[target - diff] + suffix[target]);
+            sum += nums[i];
+            --prefix[sum];
+            ++suffix[total - sum];
+        }
+        return res;
+    }
+};
+```
+
+---
+
+##410 ****[Problem Link]https://leetcode.com/problems/maximum-building-height****
+**Approach:** Constraint propagation + segment relaxation + binary search.
+**Time Complexity:** O(n log n)
+
+```cpp
+class Solution {
+public:
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        restrictions.push_back({1, 0});
+        restrictions.push_back({n, n - 1});
+        sort(restrictions.begin(), restrictions.end());
+
+        int m = restrictions.size();
+        for (int i = 1; i < m; ++i)
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + restrictions[i][0] - restrictions[i - 1][0]);
+
+        for (int i = m - 2; i >= 0; --i)
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + restrictions[i + 1][0] - restrictions[i][0]);
+
+        int res = 0;
+        for (int i = 1; i < m; ++i) {
+            int d = restrictions[i][0] - restrictions[i - 1][0];
+            int h1 = restrictions[i - 1][1], h2 = restrictions[i][1];
+            res = max(res, (h1 + h2 + d) / 2);
+        }
+        return res;
+    }
+};
+```
+##411 ****[Problem Link]https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisonss****
+**Approach:** Use 3D DP: dp[i][j][k] where i is index, j is current max, and k is number of comparisons done. Transition by choosing new values and updating comparison count accordingly.  
+**Time Complexity:** O(n*m*k)
+
+```cpp
+#include <vector>
+using namespace std;
+const int MOD = 1e9 + 7;
+
+class Solution {
+public:
+    int numOfArrays(int n, int m, int k) {
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(m + 1, vector<int>(k + 1)));
+        for (int j = 1; j <= m; ++j)
+            dp[1][j][1] = 1;
+        
+        for (int i = 2; i <= n; ++i) {
+            for (int maxVal = 1; maxVal <= m; ++maxVal) {
+                for (int cost = 1; cost <= k; ++cost) {
+                    dp[i][maxVal][cost] = (1LL * dp[i - 1][maxVal][cost] * maxVal) % MOD;
+                    for (int j = 1; j < maxVal; ++j)
+                        dp[i][maxVal][cost] = (dp[i][maxVal][cost] + dp[i - 1][j][cost - 1]) % MOD;
+                }
+            }
+        }
+
+        int res = 0;
+        for (int j = 1; j <= m; ++j)
+            res = (res + dp[n][j][k]) % MOD;
+        return res;
+    }
+};
+```
+
+---
+
+##412 ****[Problem Link]https://leetcode.com/problems/surface-area-of-3d-shapes/****
+**Approach:** Add 6 * grid[i][j] for each cell, subtract overlapping faces with neighbors.  
+**Time Complexity:** O(n^2)
+
+```cpp
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int surfaceArea(vector<vector<int>>& grid) {
+        int area = 0, n = grid.size();
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j]) area += 6 * grid[i][j] - 2 * (grid[i][j] - 1);
+                if (i) area -= 2 * min(grid[i][j], grid[i - 1][j]);
+                if (j) area -= 2 * min(grid[i][j], grid[i][j - 1]);
+            }
+        return area;
+    }
+};
+```
+
+---
+##413 ****[Problem Link]https://leetcode.com/problems/maximum-earnings-from-taxi****
+**Approach:** Use DP with binary search. Sort trips by end time and find max earnings using dp[i] = max(dp[i-1], profit[i] + dp[last_compatible_trip]).  
+**Time Complexity:** O(n log n)
+
+```cpp
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    long long maxTaxiEarnings(int n, vector<vector<int>>& rides) {
+        sort(rides.begin(), rides.end(), [](const auto& a, const auto& b) { return a[1] < b[1]; });
+        vector<long long> dp(rides.size() + 1);
+        vector<int> ends;
+        for (auto& r : rides) ends.push_back(r[1]);
+
+        for (int i = 0; i < rides.size(); ++i) {
+            auto [start, end, tip] = tie(rides[i][0], rides[i][1], rides[i][2]);
+            int j = upper_bound(ends.begin(), ends.begin() + i, start) - ends.begin();
+            if (j) j--;
+            else j = -1;
+            long long profit = end - start + tip;
+            dp[i + 1] = max(dp[i], profit + (j >= 0 ? dp[j + 1] : 0));
+        }
+        return dp[rides.size()];
+    }
+};
+```
+
+---
+
+##414 ****[Problem Link]https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/****
+**Approach:** Use Kruskal’s algorithm to calculate MST. For each edge, exclude and include it separately to test its necessity and presence in all MSTs.  
+**Time Complexity:** O(E^2 * α(N))
+
+```cpp
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class DSU {
+    vector<int> parent;
+public:
+    DSU(int n): parent(n) { iota(parent.begin(), parent.end(), 0); }
+    int find(int x) {
+        if (x != parent[x]) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+    bool unite(int x, int y) {
+        int fx = find(x), fy = find(y);
+        if (fx == fy) return false;
+        parent[fx] = fy;
+        return true;
+    }
+};
+
+class Solution {
+    int kruskal(int n, vector<vector<int>>& edges, int skip = -1, int pick = -1) {
+        DSU dsu(n);
+        int cost = 0;
+        if (pick != -1) {
+            dsu.unite(edges[pick][0], edges[pick][1]);
+            cost += edges[pick][2];
+        }
+        for (int i = 0; i < edges.size(); ++i) {
+            if (i == skip) continue;
+            if (dsu.unite(edges[i][0], edges[i][1]))
+                cost += edges[i][2];
+        }
+        for (int i = 1; i < n; ++i)
+            if (dsu.find(i) != dsu.find(0)) return 1e9;
+        return cost;
+    }
+
+public:
+    vector<vector<int>> findCriticalAndPseudoCriticalEdges(int n, vector<vector<int>>& edges) {
+        for (int i = 0; i < edges.size(); ++i) edges[i].push_back(i);
+        sort(edges.begin(), edges.end(), [](auto& a, auto& b) { return a[2] < b[2]; });
+        int minCost = kruskal(n, edges);
+        vector<int> critical, pseudo;
+
+        for (int i = 0; i < edges.size(); ++i) {
+            if (kruskal(n, edges, i) > minCost)
+                critical.push_back(edges[i][3]);
+            else if (kruskal(n, edges, -1, i) == minCost)
+                pseudo.push_back(edges[i][3]);
+        }
+        return {critical, pseudo};
+    }
+};
+```
+
+---
+
+##415 ****[Problem Link]https://leetcode.com/problems/maximum-height-by-stacking-cuboids/****
+**Approach:** Sort dimensions of each cuboid. Use variation of Longest Increasing Subsequence on 3D sorted boxes to compute max stackable height.  
+**Time Complexity:** O(n^2)
+
+```cpp
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxHeight(vector<vector<int>>& cuboids) {
+        for (auto& c : cuboids) sort(c.begin(), c.end());
+        sort(cuboids.begin(), cuboids.end());
+        int n = cuboids.size(), ans = 0;
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i) {
+            dp[i] = cuboids[i][2];
+            for (int j = 0; j < i; ++j) {
+                if (cuboids[j][0] <= cuboids[i][0] &&
+                    cuboids[j][1] <= cuboids[i][1] &&
+                    cuboids[j][2] <= cuboids[i][2])
+                    dp[i] = max(dp[i], dp[j] + cuboids[i][2]);
+            }
+            ans = max(ans, dp[i]);
+        }
+        return ans;
+    }
+};
+```
+
+---
+
+##416 ****[Problem Link]https://leetcode.com/problems/super-palindromes/****
+
+**Approach:** Iterate through palindromes and check if their square is also a palindrome and lies within the range.
+
+```cpp
+#include <string>
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    bool isPalindrome(long long x) {
+        string s = to_string(x);
+        int i = 0, j = s.size() - 1;
+        while (i < j) {
+            if (s[i++] != s[j--]) return false;
+        }
+        return true;
+    }
+
+    int superpalindromesInRange(string left, string right) {
+        long long L = stoll(left), R = stoll(right), ans = 0;
+
+        for (int k = 1; k < 100000; ++k) {
+            string s = to_string(k), rs = s;
+            reverse(rs.begin(), rs.end());
+            long long val = stoll(s + rs);
+            val *= val;
+            if (val > R) break;
+            if (val >= L && isPalindrome(val)) ++ans;
+        }
+
+        for (int k = 1; k < 100000; ++k) {
+            string s = to_string(k), rs = s.substr(0, s.size() - 1);
+            reverse(rs.begin(), rs.end());
+            long long val = stoll(s + rs);
+            val *= val;
+            if (val > R) break;
+            if (val >= L && isPalindrome(val)) ++ans;
+        }
+
+        return ans;
+    }
+};
+```
+
+---
+
+##417 ****[Problem Link]https://leetcode.com/problems/prime-palindrome****
+
+**Approach:** Generate palindromic numbers and check for primality.
+
+```cpp
+#include <string>
+#include <cmath>
+using namespace std;
+
+class Solution {
+public:
+    bool isPrime(int x) {
+        if (x < 2) return false;
+        int r = sqrt(x);
+        for (int d = 2; d <= r; ++d)
+            if (x % d == 0) return false;
+        return true;
+    }
+
+    int primePalindrome(int n) {
+        for (int i = 1; i < 100000; ++i) {
+            string s = to_string(i), r = s;
+            reverse(r.begin(), r.end());
+            int x = stoi(s + r.substr(1));
+            if (x >= n && isPrime(x)) return x;
+        }
+        return 100030001; // known upper bound
+    }
+};
+```
+
+---
+
+##418 ****[Problem Link]https://leetcode.com/problems/insufficient-nodes-in-root-to-leaf-paths****
+
+**Approach:** DFS and prune subtrees that do not meet the limit.
+
+```cpp
+#include <cstdlib>
+
+class Solution {
+public:
+    TreeNode* sufficientSubset(TreeNode* root, int limit) {
+        if (!root) return nullptr;
+        if (!root->left && !root->right)
+            return root->val < limit ? nullptr : root;
+
+        root->left = sufficientSubset(root->left, limit - root->val);
+        root->right = sufficientSubset(root->right, limit - root->val);
+
+        return (!root->left && !root->right) ? nullptr : root;
+    }
+};
+```
+
+---
+
+##419 ****[Problem Link]https://leetcode.com/problems/minimum-numbers-of-function-calls-to-make-target-array/****
+
+**Approach:** Count all +1 operations and count max bit length (for doublings).
+
+```cpp
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int minOperations(vector<int>& nums) {
+        int maxBit = 0, ones = 0;
+        for (int num : nums) {
+            int b = 0;
+            while (num) {
+                if (num & 1) ++ones;
+                num >>= 1;
+                ++b;
+            }
+            maxBit = max(maxBit, b - 1);
+        }
+        return ones + maxBit;
+    }
+};
+```
+
+---
+
+##420 ****[Problem Link]https://leetcode.com/problems/pasrse-lisp-expression***
+
+**Approach:** Recursive parsing using a stack of variable scopes.
+
+```cpp
+#include <unordered_map>
+#include <vector>
+#include <sstream>
+using namespace std;
+
+class Solution {
+    int pos;
+    unordered_map<string, vector<int>> vars;
+
+    int getValue(string token) {
+        if (isalpha(token[0]) || token[0] == '-') {
+            if (vars.count(token)) return vars[token].back();
+            return stoi(token);
+        }
+        return stoi(token);
+    }
+
+    int parse(string& exp) {
+        if (exp[pos] != '(') {
+            int end = pos;
+            while (end < exp.size() && exp[end] != ' ' && exp[end] != ')') ++end;
+            string token = exp.substr(pos, end - pos);
+            pos = end;
+            return getValue(token);
+        }
+
+        ++pos; // skip '('
+        int end = pos;
+        while (exp[end] != ' ') ++end;
+        string cmd = exp.substr(pos, end - pos);
+        pos = end + 1;
+
+        if (cmd == "let") {
+            vector<string> keys;
+            while (true) {
+                if (exp[pos] == '(' || isdigit(exp[pos]) || exp[pos] == '-') break;
+                end = pos;
+                while (exp[end] != ' ' && exp[end] != ')') ++end;
+                string var = exp.substr(pos, end - pos);
+                pos = end + 1;
+
+                if (exp[pos] == ')' || exp[pos] == '(' || isdigit(exp[pos]) || exp[pos] == '-') {
+                    keys.push_back(var);
+                    vars[var].push_back(parse(exp));
+                    break;
+                }
+
+                keys.push_back(var);
+                vars[var].push_back(parse(exp));
+            }
+            int val = parse(exp);
+            for (auto& k : keys) vars[k].pop_back();
+            ++pos;
+            return val;
+        } else if (cmd == "add" || cmd == "mult") {
+            int a = parse(exp);
+            ++pos; // skip space
+            int b = parse(exp);
+            ++pos;
+            return cmd == "add" ? a + b : a * b;
+        }
+
+        return 0;
+    }
+
+public:
+    int evaluate(string expression) {
+        pos = 0;
+        return parse(expression);
+    }
+};
+```
+
+---
+
+##421 ****[Problem Link]https://leetcode.com/problems/count-negative-numbers-in-a-sorted-matrix/****
+**Approach:** Traverse each row from the end to the start, reducing checks for each next row.
+**Time Complexity:** O(m + n)
+
+```cpp
+class Solution {
+public:
+    int countNegatives(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        int i = m - 1, j = 0, count = 0;
+        while (i >= 0 && j < n) {
+            if (grid[i][j] < 0) {
+                count += n - j;
+                --i;
+            } else {
+                ++j;
+            }
+        }
+        return count;
+    }
+};
+```
+
+---
+
+##422 ****[Problem Link]https://leetcode.com/problems/snapshot-array****
+**Approach:** Use a map to track snapshot ID to value changes per index.
+**Time Complexity:** O(log s) per get, where s is the number of snapshots.
+
+```cpp
+class SnapshotArray {
+    int snap_id = 0;
+    vector<map<int, int>> records;
+public:
+    SnapshotArray(int length) {
+        records.resize(length);
+    }
+
+    void set(int index, int val) {
+        records[index][snap_id] = val;
+    }
+
+    int snap() {
+        return snap_id++;
+    }
+
+    int get(int index, int snap_id) {
+        auto it = records[index].upper_bound(snap_id);
+        if (it == records[index].begin()) return 0;
+        --it;
+        return it->second;
+    }
+};
+```
+
+---
+
+##423 ****[Problem Link]https://leetcode.com/problems/couples-holding-hands/****
+**Approach:** Use union-find to group mismatched couples.
+**Time Complexity:** O(n)
+
+```cpp
+class Solution {
+public:
+    int minSwapsCouples(vector<int>& row) {
+        int n = row.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i)
+            parent[i] = i;
+
+        function<int(int)> find = [&]int x {
+            return parent[x] == x ? x : parent[x] = find(parent[x]);
+        };
+
+        for (int i = 0; i < n; i += 2) {
+            int a = row[i] / 2;
+            int b = row[i+1] / 2;
+            parent[find(a)] = find(b);
+        }
+
+        unordered_set<int> unique_parents;
+        for (int i = 0; i < n / 2; ++i)
+            unique_parents.insert(find(i));
+
+        return n / 2 - unique_parents.size();
+    }
+};
+```
+
+---
