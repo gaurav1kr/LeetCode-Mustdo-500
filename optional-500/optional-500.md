@@ -14743,3 +14743,154 @@ public:
 ```
 
 ---
+
+##424 ****[Problem Link]https://leetcode.com/problems/day-of-the-week/****
+
+```cpp
+class Solution {
+public:
+    string dayOfTheWeek(int day, int month, int year) {
+        vector<string> days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        tm time_in = {0, 0, 0, day, month - 1, year - 1900};
+        mktime(&time_in);
+        return days[time_in.tm_wday];
+    }
+};
+```
+
+##425 ****[Problem Link]https://leetcode.com/problems/shopping-offers/****
+
+```cpp
+class Solution {
+public:
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        return dfs(price, special, needs);
+    }
+
+    unordered_map<string, int> memo;
+
+    int dfs(vector<int>& price, vector<vector<int>>& special, vector<int> needs) {
+        string key = encode(needs);
+        if (memo.count(key)) return memo[key];
+
+        int res = 0;
+        for (int i = 0; i < needs.size(); ++i)
+            res += needs[i] * price[i];
+
+        for (auto& offer : special) {
+            vector<int> clone = needs;
+            int i = 0;
+            for (; i < needs.size(); ++i) {
+                if (clone[i] < offer[i]) break;
+                clone[i] -= offer[i];
+            }
+            if (i == needs.size()) {
+                res = min(res, offer.back() + dfs(price, special, clone));
+            }
+        }
+        return memo[key] = res;
+    }
+
+    string encode(vector<int>& needs) {
+        string res;
+        for (int n : needs) res += to_string(n) + ",";
+        return res;
+    }
+};
+```
+
+##426 ****[Problem Link]https://leetcode.com/problems/tree-of-coprimes/****
+
+```cpp
+class Solution {
+public:
+    vector<int> coprimes[51];
+    void dfs(vector<vector<int>>& tree, vector<int>& nums, vector<int>& ans, int node, int parent, vector<vector<pair<int, int>>>& ancestors, int depth) {
+        int maxDepth = -1, ancestor = -1;
+        for (int val = 1; val <= 50; ++val) {
+            if (__gcd(nums[node], val) == 1 && !ancestors[val].empty()) {
+                if (ancestors[val].back().second > maxDepth) {
+                    maxDepth = ancestors[val].back().second;
+                    ancestor = ancestors[val].back().first;
+                }
+            }
+        }
+        ans[node] = ancestor;
+        ancestors[nums[node]].emplace_back(node, depth);
+        for (int child : tree[node]) {
+            if (child != parent) {
+                dfs(tree, nums, ans, child, node, ancestors, depth + 1);
+            }
+        }
+        ancestors[nums[node]].pop_back();
+    }
+
+    vector<int> getCoprimes(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        vector<vector<int>> tree(n);
+        for (auto& e : edges) {
+            tree[e[0]].push_back(e[1]);
+            tree[e[1]].push_back(e[0]);
+        }
+        vector<int> ans(n, -1);
+        vector<vector<pair<int, int>>> ancestors(51);
+        dfs(tree, nums, ans, 0, -1, ancestors, 0);
+        return ans;
+    }
+};
+```
+
+##427 ****[Problem Link]https://leetcode.com/problems/maximum-fruits-harvested-after-at-most-k-steps/****
+
+```cpp
+class Solution {
+public:
+    int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
+        int n = fruits.size(), res = 0, j = 0, sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += fruits[i][1];
+            while (j <= i && min(abs(fruits[i][0] - startPos), abs(fruits[j][0] - startPos)) + fruits[i][0] - fruits[j][0] > k)
+                sum -= fruits[j++][1];
+            res = max(res, sum);
+        }
+        return res;
+    }
+};
+
+```
+
+##428 ****[Problem Link]https://leetcode.com/problems/make-the-xor-of-all-segments-equal-to-zero/****
+
+```cpp
+class Solution {
+public:
+    int minChanges(vector<int>& nums, int k) {
+        const int MAX = 1024;
+        const int INF = 1e9;
+        vector<int> dp(MAX, INF);
+        dp[0] = 0;
+
+        for (int i = 0; i < k; ++i) {
+            unordered_map<int, int> freq;
+            int count = 0;
+            for (int j = i; j < nums.size(); j += k) {
+                freq[nums[j]]++;
+                count++;
+            }
+
+            int min_prev = *min_element(dp.begin(), dp.end());
+            vector<int> new_dp(MAX, min_prev + count);
+
+            for (auto& [val, f] : freq) {
+                for (int x = 0; x < MAX; ++x) {
+                    new_dp[x ^ val] = min(new_dp[x ^ val], dp[x] + count - f);
+                }
+            }
+            dp = move(new_dp);
+        }
+
+        return dp[0];
+    }
+};
+```
+
