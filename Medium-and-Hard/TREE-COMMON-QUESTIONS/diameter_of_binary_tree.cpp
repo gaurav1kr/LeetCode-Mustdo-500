@@ -1,27 +1,28 @@
 class Solution 
 {
 public:
-    int res=0;
-    
-    int diameter_util(TreeNode* root)
-	{
-        if(!root)
+    int res = 0;  // To store the maximum diameter
+
+    int diameter_util(TreeNode* root) 
+    {
+        if (!root)
             return 0;
-        int l= diameter_util(root->left);
-        int r= diameter_util(root->right);
-        int temp=max(l,r)+1;
-        res=max(res,(l+r));
-        return temp;
+
+        int leftHeight = diameter_util(root->left);   // height of left subtree
+        int rightHeight = diameter_util(root->right); // height of right subtree
+
+        // Diameter passing through current node is sum of left and right subtree heights
+        res = max(res, leftHeight + rightHeight);
+
+        // Return height of current subtree
+        return max(leftHeight, rightHeight) + 1;
     }
-    
-    
+
     int diameterOfBinaryTree(TreeNode* root) 
-	{
-       if(!root)
-             return 0;
-        int l= diameterOfBinaryTree(root->left);
-        int d= diameterOfBinaryTree(root->right);
-        int a=diameter_util(root);
-        return res;
+    {
+        res = 0;                     // Initialize result
+        diameter_util(root);        // Compute diameter
+        return res;                 // Return the result
     }
 };
+
